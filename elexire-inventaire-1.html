@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexire — Inventaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#fdf8f3;font-family:'Lato','Segoe UI',sans-serif;color:#3a2c1e;min-height:100vh}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#c9a97a;border-radius:4px}
+
+  /* Header */
+  .header{background:linear-gradient(140deg,#2e1f0e 0%,#6d5339 100%);padding:26px 22px 18px;position:relative;overflow:hidden}
+  .header::after{content:'';position:absolute;top:-40px;right:-30px;width:130px;height:130px;background:rgba(201,169,122,.12);border-radius:50%}
+  .header-inner{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .brand{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#f5ece0;letter-spacing:.02em}
+  .brand-sub{font-size:12px;color:#c9a97a;margin-top:2px;font-weight:300}
+  .stats{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .stat{background:rgba(255,255,255,.09);border-radius:10px;padding:10px 16px;text-align:center;min-width:72px}
+  .stat-n{font-size:21px;font-weight:700;color:#f5ece0}
+  .stat-n.warn{color:#f39c12}
+  .stat-l{font-size:10px;color:#c9a97a}
+
+  /* Boutons */
+  .btn{cursor:pointer;border:none;border-radius:8px;font-family:inherit;font-weight:700;transition:all .18s;display:inline-flex;align-items:center;gap:6px}
+  .btn-primary{background:#6d5339;color:#fff;padding:10px 20px;font-size:14px}
+  .btn-primary:hover{background:#523d2a;box-shadow:0 4px 14px rgba(109,83,57,.35);transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:#8b6f4e;padding:8px 14px;border:1.5px solid #c9a97a;font-size:13px}
+  .btn-ghost:hover{background:#f5ece0}
+  .btn-header{background:rgba(255,255,255,.1);color:#c9a97a;border:1px solid rgba(201,169,122,.25);font-size:12px;padding:7px 11px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700}
+  .btn-header:hover{background:rgba(255,255,255,.18)}
+  .btn-green{background:#1e7e4a;color:#fff;padding:10px 16px;font-size:14px;border-radius:8px;border:none;font-family:inherit;font-weight:700;cursor:pointer;width:100%;transition:all .18s}
+  .btn-green:hover{background:#155c35;transform:translateY(-1px)}
+  .btn-green:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn-danger{background:transparent;color:#b03a2e;padding:6px 11px;border:1.5px solid #e8b4b0;font-size:12px}
+  .btn-danger:hover{background:#fdf0ef}
+  .btn-sm{padding:6px 11px;font-size:12px}
+
+  /* Alertes */
+  .alert-bar{background:#fff8e1;border-bottom:1px solid #ffe082;padding:10px 18px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700}
+  .badge-warn{background:#fff3cd;color:#7d5a00;border:1px solid #ffc107}
+
+  /* Barre recherche */
+  .toolbar{padding:14px 18px;display:flex;gap:9px;align-items:center}
+  .inp{width:100%;padding:9px 13px;border:1.5px solid #ddd0be;border-radius:8px;font-family:inherit;font-size:14px;background:#fdf8f3;color:#3a2c1e;outline:none;transition:border .18s}
+  .inp:focus{border-color:#8b6f4e}
+  select.inp{cursor:pointer}
+
+  /* Tabs */
+  .tabs{padding:0 18px 12px;display:flex;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab{cursor:pointer;padding:7px 15px;border-radius:20px;font-size:13px;font-weight:700;transition:all .18s;border:none;background:transparent;color:#8b6f4e;white-space:nowrap;font-family:inherit}
+  .tab.active{background:#6d5339;color:#fff}
+  .tab:hover:not(.active){background:#ede0cc}
+
+  /* Liste */
+  .list{padding:0 18px 100px;display:flex;flex-direction:column;gap:9px}
+  .empty{text-align:center;padding:60px 20px;color:#b8a090}
+  .empty-icon{font-size:42px;margin-bottom:10px}
+  .empty-title{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:5px}
+
+  /* Cards */
+  .card{background:#fff;border-radius:14px;padding:16px 18px;border:1px solid #e8d9c2;transition:box-shadow .2s}
+  .card:hover{box-shadow:0 4px 18px rgba(139,111,78,.13)}
+  .card.low{border-left:3px solid #e67e22}
+  .card-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .card-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:600}
+  .card-cat{font-size:12px;color:#a08060;margin-top:3px}
+  .card-stats{display:flex;gap:18px;margin-top:10px;flex-wrap:wrap}
+  .card-stat-l{font-size:10px;color:#8b6f4e;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .card-stat-v{font-size:14px;font-weight:700}
+  .card-stat-v.accent{color:#6d5339}
+  .card-notes{font-size:12px;color:#a08060;margin-top:7px;font-style:italic}
+  .card-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:14px}
+  .overlay.hidden{display:none}
+  .modal{background:#fdf8f3;border-radius:18px;padding:26px;max-width:540px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 70px rgba(30,20,10,.3)}
+  .modal-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:18px;color:#3a2c1e}
+  .form-group{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;display:block}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .pcalc{background:#f0ede6;border-radius:8px;padding:9px 13px;font-size:13px;color:#5c4020}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+
+  /* Backup modal */
+  .section-title{font-weight:700;font-size:14px;color:#3a2c1e;margin-bottom:10px}
+  .drop-zone{border:2px dashed #c9a97a;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fdf8f3}
+  .drop-zone:hover{background:#f5ece0;border-color:#8b6f4e}
+  .msg-box{border-radius:8px;padding:10px 14px;font-size:13px;margin-top:10px;font-weight:600}
+  .msg-ok{background:#eaf4ee;color:#1a5c35;border:1px solid #a8d9b8}
+  .msg-err{background:#fdf0ef;color:#8b1a10;border:1px solid #e8b4b0}
+  .divider{border:none;border-top:1px solid #ede0cc;margin:18px 0}
+  .hint{font-size:12px;color:#a08060;margin-top:8px}
+
+  /* Toast */
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);padding:11px 24px;border-radius:30px;font-weight:700;font-size:13px;z-index:200;box-shadow:0 4px 18px rgba(0,0,0,.18);transition:opacity .3s;pointer-events:none}
+  .toast.success{background:#2d6a4f;color:#fff}
+  .toast.error{background:#b03a2e;color:#fff}
+  .toast.hidden{opacity:0}
+
+  @media(max-width:480px){.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="brand">✦ Elexire</div>
+      <div class="brand-sub">Inventaire · Matières premières</div>
+    </div>
+    <button class="btn-header" onclick="openBackup()">💾 Backup</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="stat-total">0</div><div class="stat-l">Produits</div></div>
+    <div class="stat"><div class="stat-n" id="stat-alerts">0</div><div class="stat-l">Alertes</div></div>
+    <div class="stat"><div class="stat-n" id="stat-cats">0</div><div class="stat-l">Catégories</div></div>
+  </div>
+</div>
+
+<!-- ALERTE STOCK BAS -->
+<div class="alert-bar" id="alert-bar" style="display:none">
+  <span>⚠️</span>
+  <span style="font-weight:700;font-size:13px;color:#7d5a00">Stock bas :</span>
+  <span id="alert-items"></span>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <input class="inp" id="search" placeholder="🔍 Rechercher…" oninput="renderList()" style="flex:1">
+  <button class="btn btn-primary" onclick="openForm()">+ Ajouter</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabs"></div>
+
+<!-- LISTE -->
+<div class="list" id="list"></div>
+
+<!-- MODAL PRODUIT -->
+<div class="overlay hidden" id="modal-overlay" onclick="if(event.target===this)closeForm()">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">✦ Nouveau produit</div>
+    <div class="form-group">
+      <div>
+        <label class="lbl">Nom *</label>
+        <input class="inp" id="f-nom" placeholder="Ex: Parfum Brioche au beurre">
+      </div>
+      <div>
+        <label class="lbl">Catégorie</label>
+        <select class="inp" id="f-cat" onchange="updateFormFields()">
+          <option value="parfums">🌸 Parfums</option>
+          <option value="cire">🕯️ Cire</option>
+          <option value="additifs">⚗️ Additifs</option>
+          <option value="colorants">🎨 Colorants</option>
+          <option value="packaging">📦 Packaging</option>
+          <option value="consommables">🏷️ Consommables</option>
+        </select>
+      </div>
+
+      <!-- Champs stock dynamiques -->
+      <div id="fields-parfums" class="g2">
+        <div><label class="lbl">Quantité (ml)</label><input class="inp" id="f-ml" type="number" placeholder="ex: 30" oninput="updateCalc()"></div>
+        <div><label class="lbl">Quantité (g)</label><input class="inp" id="f-g1" type="number" placeholder="ex: 28" oninput="updateCalc()"></div>
+      </div>
+      <div id="fields-ponderal" class="g2" style="display:none">
+        <div><label class="lbl">Quantité (kg)</label><input class="inp" id="f-kg" type="number" placeholder="ex: 5" oninput="updateCalc()"></div>
+        <div><label class="lbl">Quantité (g)</label><input class="inp" id="f-g2" type="number" placeholder="ex: 500" oninput="updateCalc()"></div>
+      </div>
+      <div id="fields-unite" style="display:none">
+        <label class="lbl">Quantité (unités)</label>
+        <input class="inp" id="f-u" type="number" placeholder="ex: 100" oninput="updateCalc()">
+      </div>
+
+      <div class="g2">
+        <div><label class="lbl">Prix d'achat TTC (€)</label><input class="inp" id="f-prix" type="number" step="0.01" placeholder="ex: 4.14" oninput="updateCalc()"></div>
+        <div><label class="lbl">Seuil alerte (g/ml/unités)</label><input class="inp" id="f-seuil" type="number" placeholder="ex: 10"></div>
+      </div>
+
+      <div id="f-calc" class="pcalc" style="display:none"></div>
+
+      <div><label class="lbl">Fournisseur</label><input class="inp" id="f-four" placeholder="ex: Le Petit Grassois"></div>
+      <div><label class="lbl">Notes</label><input class="inp" id="f-notes" placeholder="Référence, lot, infos utiles…"></div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeForm()">Annuler</button>
+        <button class="btn btn-primary" onclick="saveItem()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BACKUP -->
+<div class="overlay hidden" id="backup-overlay" onclick="if(event.target===this)closeBackup()">
+  <div class="modal">
+    <div class="modal-title">💾 Sauvegarde & Restauration</div>
+    <p style="font-size:13px;color:#8b6f4e;margin-bottom:20px">Exporte un fichier CSV à ouvrir dans Google Sheets ou Excel. Garde-le en sécurité pour restaurer tes données à tout moment.</p>
+
+    <div class="section-title">📤 Exporter</div>
+    <button class="btn-green" id="btn-export" onclick="exportCSV()">⬇️ Télécharger le CSV</button>
+    <p class="hint">S'ouvre directement dans Google Sheets ou Excel. Sauvegarde-le dans ton Drive !</p>
+
+    <hr class="divider">
+
+    <div class="section-title">📥 Restaurer depuis un CSV</div>
+    <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+      <div style="font-size:28px;margin-bottom:6px">📂</div>
+      <div style="font-weight:700;font-size:14px;color:#6d5339">Choisir un fichier CSV</div>
+      <div style="font-size:12px;color:#a08060;margin-top:4px">Clique pour parcourir</div>
+    </div>
+    <input type="file" id="file-input" accept=".csv,text/csv" style="display:none" onchange="importCSV(event)">
+    <div id="import-msg" style="display:none"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeBackup()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast hidden" id="toast"></div>
+
+<script>
+// ── Données ──
+const STORAGE_KEY = 'elexire-inventaire-v1';
+const CATS = {
+  parfums:      { label:'Parfums',      icon:'🌸' },
+  cire:         { label:'Cire',         icon:'🕯️' },
+  additifs:     { label:'Additifs',     icon:'⚗️' },
+  colorants:    { label:'Colorants',    icon:'🎨' },
+  packaging:    { label:'Packaging',    icon:'📦' },
+  consommables: { label:'Consommables', icon:'🏷️' },
+};
+const COLS = ['id','nom','categorie','stock_ml','stock_g','stock_kg','stock_unite','prix_achat_ttc','prix_unitaire','prix_unitaire_label','fournisseur','seuil_alerte','notes'];
+
+let items = [];
+let activeTab = 'tous';
+let editId = null;
+let toastTimer = null;
+
+function load() {
+  try { items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { items = []; }
+  render();
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+// ── Calculs ──
+function computePrix(cat, ml, g, kg, g2, u, prix) {
+  prix = parseFloat(prix);
+  if (isNaN(prix) || prix <= 0) return null;
+  if (cat === 'parfums') {
+    ml = parseFloat(ml); g = parseFloat(g);
+    if (!isNaN(ml) && ml > 0) return { label:'€/L', value:((prix/ml)*1000).toFixed(2) };
+    if (!isNaN(g) && g > 0) return { label:'€/kg', value:((prix/g)*1000).toFixed(2) };
+  } else if (['cire','additifs','colorants'].includes(cat)) {
+    kg = parseFloat(kg); g2 = parseFloat(g2);
+    if (!isNaN(kg) && kg > 0) return { label:'€/kg', value:(prix/kg).toFixed(2) };
+    if (!isNaN(g2) && g2 > 0) return { label:'€/kg', value:((prix/g2)*1000).toFixed(2) };
+  } else {
+    u = parseFloat(u);
+    if (!isNaN(u) && u > 0) return { label:'€/unité', value:(prix/u).toFixed(2) };
+  }
+  return null;
+}
+
+function getStockDisplay(item) {
+  if (item.categorie === 'parfums') {
+    const p = [];
+    if (item.stock_ml) p.push(item.stock_ml + ' ml');
+    if (item.stock_g) p.push(item.stock_g + ' g');
+    return p.join(' / ') || '—';
+  }
+  if (['cire','additifs','colorants'].includes(item.categorie)) {
+    const p = [];
+    if (item.stock_kg) p.push(item.stock_kg + ' kg');
+    if (item.stock_g) p.push(item.stock_g + ' g');
+    return p.join(' / ') || '—';
+  }
+  return item.stock_unite ? item.stock_unite + ' unités' : '—';
+}
+
+function getStockValue(item) {
+  if (item.categorie === 'parfums') return (parseFloat(item.stock_ml)||0) + (parseFloat(item.stock_g)||0);
+  if (['cire','additifs','colorants'].includes(item.categorie)) return (parseFloat(item.stock_kg)||0)*1000 + (parseFloat(item.stock_g)||0);
+  return parseFloat(item.stock_unite)||0;
+}
+
+function isBelowAlert(item) {
+  if (!item.seuil_alerte) return false;
+  const s = parseFloat(item.seuil_alerte);
+  return !isNaN(s) && getStockValue(item) <= s;
+}
+
+// ── Rendu ──
+function render() {
+  renderStats();
+  renderAlerts();
+  renderTabs();
+  renderList();
+}
+
+function renderStats() {
+  const alerts = items.filter(isBelowAlert);
+  const cats = new Set(items.map(i=>i.categorie)).size;
+  document.getElementById('stat-total').textContent = items.length;
+  const an = document.getElementById('stat-alerts');
+  an.textContent = alerts.length;
+  an.className = 'stat-n' + (alerts.length > 0 ? ' warn' : '');
+  document.getElementById('stat-cats').textContent = cats;
+}
+
+function renderAlerts() {
+  const alerts = items.filter(isBelowAlert);
+  const bar = document.getElementById('alert-bar');
+  const span = document.getElementById('alert-items');
+  if (alerts.length === 0) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+  span.innerHTML = alerts.map(i => `<span class="badge badge-warn">${i.nom}</span>`).join(' ');
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('tabs');
+  let html = `<button class="tab ${activeTab==='tous'?'active':''}" onclick="setTab('tous')">Tous (${items.length})</button>`;
+  Object.entries(CATS).forEach(([id, cat]) => {
+    const n = items.filter(i=>i.categorie===id).length;
+    if (n > 0) html += `<button class="tab ${activeTab===id?'active':''}" onclick="setTab('${id}')">${cat.icon} ${cat.label} (${n})</button>`;
+  });
+  tabs.innerHTML = html;
+}
+
+function setTab(tab) { activeTab = tab; renderTabs(); renderList(); }
+
+function renderList() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const filtered = items.filter(item =>
+    (activeTab === 'tous' || item.categorie === activeTab) &&
+    item.nom.toLowerCase().includes(search)
+  );
+  const list = document.getElementById('list');
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon">📦</div>
+      <div class="empty-title">${search ? 'Aucun résultat' : 'Inventaire vide'}</div>
+      <div style="font-size:13px">${search ? 'Essaie un autre terme.' : 'Ajoute tes premières matières premières !'}</div>
+    </div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(item => {
+    const low = isBelowAlert(item);
+    const cat = CATS[item.categorie] || { icon:'📦', label:item.categorie };
+    return `<div class="card ${low?'low':''}">
+      <div class="card-inner">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <span style="font-size:17px">${cat.icon}</span>
+            <span class="card-name">${item.nom}</span>
+            ${low ? '<span class="badge badge-warn">⚠ Stock bas</span>' : ''}
+          </div>
+          <div class="card-cat">${cat.label}${item.fournisseur ? ' · ' + item.fournisseur : ''}</div>
+          <div class="card-stats">
+            <div><div class="card-stat-l">Stock</div><div class="card-stat-v">${getStockDisplay(item)}</div></div>
+            ${item.prix_achat_ttc ? `<div><div class="card-stat-l">Achat TTC</div><div class="card-stat-v">${item.prix_achat_ttc} €</div></div>` : ''}
+            ${item.prix_unitaire ? `<div><div class="card-stat-l">Prix unitaire</div><div class="card-stat-v accent">${item.prix_unitaire} ${item.prix_unitaire_label}</div></div>` : ''}
+          </div>
+          ${item.notes ? `<div class="card-notes">💬 ${item.notes}</div>` : ''}
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEdit('${item.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Formulaire ──
+function updateFormFields() {
+  const cat = document.getElementById('f-cat').value;
+  document.getElementById('fields-parfums').style.display = cat==='parfums' ? 'grid' : 'none';
+  document.getElementById('fields-ponderal').style.display = ['cire','additifs','colorants'].includes(cat) ? 'grid' : 'none';
+  document.getElementById('fields-unite').style.display = ['packaging','consommables'].includes(cat) ? 'block' : 'none';
+  updateCalc();
+}
+
+function updateCalc() {
+  const cat = document.getElementById('f-cat').value;
+  const p = computePrix(
+    cat,
+    document.getElementById('f-ml').value,
+    document.getElementById('f-g1').value,
+    document.getElementById('f-kg').value,
+    document.getElementById('f-g2').value,
+    document.getElementById('f-u').value,
+    document.getElementById('f-prix').value
+  );
+  const el = document.getElementById('f-calc');
+  if (p) { el.style.display='block'; el.innerHTML=`💡 Calculé : <strong>${p.value} ${p.label}</strong>`; }
+  else el.style.display='none';
+}
+
+function openForm() {
+  editId = null;
+  document.getElementById('modal-title').textContent = '✦ Nouveau produit';
+  ['f-nom','f-ml','f-g1','f-kg','f-g2','f-u','f-prix','f-seuil','f-four','f-notes'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-cat').value = 'parfums';
+  updateFormFields();
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function openEdit(id) {
+  const item = items.find(i=>i.id===id);
+  if (!item) return;
+  editId = id;
+  document.getElementById('modal-title').textContent = '✏️ Modifier le produit';
+  document.getElementById('f-nom').value = item.nom||'';
+  document.getElementById('f-cat').value = item.categorie||'parfums';
+  document.getElementById('f-ml').value = item.stock_ml||'';
+  document.getElementById('f-g1').value = item.stock_g||'';
+  document.getElementById('f-kg').value = item.stock_kg||'';
+  document.getElementById('f-g2').value = item.stock_g||'';
+  document.getElementById('f-u').value = item.stock_unite||'';
+  document.getElementById('f-prix').value = item.prix_achat_ttc||'';
+  document.getElementById('f-seuil').value = item.seuil_alerte||'';
+  document.getElementById('f-four').value = item.fournisseur||'';
+  document.getElementById('f-notes').value = item.notes||'';
+  updateFormFields();
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeForm() { document.getElementById('modal-overlay').classList.add('hidden'); }
+
+function saveItem() {
+  const nom = document.getElementById('f-nom').value.trim();
+  if (!nom) { showToast('Le nom est obligatoire', 'error'); return; }
+  const cat = document.getElementById('f-cat').value;
+  const stock_g_val = ['cire','additifs','colorants'].includes(cat) ? document.getElementById('f-g2').value : document.getElementById('f-g1').value;
+  const p = computePrix(
+    cat,
+    document.getElementById('f-ml').value, document.getElementById('f-g1').value,
+    document.getElementById('f-kg').value, document.getElementById('f-g2').value,
+    document.getElementById('f-u').value, document.getElementById('f-prix').value
+  );
+  const newItem = {
+    id: editId || Date.now().toString(),
+    nom, categorie: cat,
+    stock_ml: document.getElementById('f-ml').value,
+    stock_g: stock_g_val,
+    stock_kg: document.getElementById('f-kg').value,
+    stock_unite: document.getElementById('f-u').value,
+    prix_achat_ttc: document.getElementById('f-prix').value,
+    prix_unitaire: p ? p.value : '',
+    prix_unitaire_label: p ? p.label : '',
+    fournisseur: document.getElementById('f-four').value,
+    seuil_alerte: document.getElementById('f-seuil').value,
+    notes: document.getElementById('f-notes').value,
+  };
+  if (editId) {
+    items = items.map(i => i.id===editId ? newItem : i);
+    showToast('Produit mis à jour ✓');
+  } else {
+    items.push(newItem);
+    showToast('Produit ajouté ✓');
+  }
+  save(); closeForm(); render();
+}
+
+function deleteItem(id) {
+  items = items.filter(i=>i.id!==id);
+  save(); render();
+  showToast('Produit supprimé', 'error');
+}
+
+// ── Backup ──
+function openBackup() {
+  document.getElementById('import-msg').style.display='none';
+  document.getElementById('backup-overlay').classList.remove('hidden');
+  document.getElementById('btn-export').textContent = `⬇️ Télécharger le CSV (${items.length} produit${items.length!==1?'s':''})`;
+}
+function closeBackup() { document.getElementById('backup-overlay').classList.add('hidden'); }
+
+function escapeCSV(val) {
+  const s = String(val ?? '');
+  if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g,'""') + '"';
+  return s;
+}
+
+function exportCSV() {
+  const header = COLS.join(',');
+  const rows = items.map(item => COLS.map(c => escapeCSV(item[c]||'')).join(','));
+  const csv = '\uFEFF' + [header,...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const date = new Date().toLocaleDateString('fr-FR').replace(/\//g,'-');
+  a.download = `Elexire-Inventaire-${date}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV téléchargé ✓');
+}
+
+function parseCSVLine(line) {
+  const result = []; let cur = '', inQ = false;
+  for (let i=0;i<line.length;i++) {
+    const ch=line[i];
+    if (ch==='"') { if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+    else if (ch===','&&!inQ) { result.push(cur); cur=''; }
+    else cur+=ch;
+  }
+  result.push(cur); return result;
+}
+
+function importCSV(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const msgEl = document.getElementById('import-msg');
+  msgEl.style.display='block'; msgEl.className='msg-box'; msgEl.textContent='Lecture…';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      let text = ev.target.result;
+      if (text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+      const lines = text.split(/\r?\n/).filter(l=>l.trim());
+      if (lines.length < 2) { msgEl.className='msg-box msg-err'; msgEl.textContent='❌ Fichier vide ou invalide.'; return; }
+      const headers = parseCSVLine(lines[0]);
+      const imported = [];
+      for (let i=1;i<lines.length;i++) {
+        const vals = parseCSVLine(lines[i]);
+        if (vals.length < 2) continue;
+        const obj = {};
+        headers.forEach((h,idx) => { obj[h.trim()] = vals[idx]?.trim()||''; });
+        if (obj.nom) imported.push(obj);
+      }
+      if (imported.length===0) { msgEl.className='msg-box msg-err'; msgEl.textContent='❌ Aucun produit trouvé.'; return; }
+      items = imported;
+      save(); render();
+      msgEl.className='msg-box msg-ok';
+      msgEl.textContent=`✅ ${imported.length} produit(s) restauré(s) avec succès !`;
+      showToast(`${imported.length} produits restaurés ✓`);
+    } catch(err) {
+      msgEl.className='msg-box msg-err'; msgEl.textContent='❌ Erreur : '+err.message;
+    }
+  };
+  reader.readAsText(file,'UTF-8');
+  e.target.value='';
+}
+
+// ── Toast ──
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className='toast hidden'; }, 3000);
+}
+
+// ── Init ──
+load();
+</script>
+</body>
+</html>
