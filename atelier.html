@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexire — Atelier</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#fdf8f3;font-family:'Lato','Segoe UI',sans-serif;color:#3a2c1e;min-height:100vh}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#c9a97a;border-radius:4px}
+
+  .header{background:linear-gradient(140deg,#2e1f0e 0%,#6d5339 100%);padding:26px 22px 18px;position:relative;overflow:hidden}
+  .header::after{content:'';position:absolute;top:-40px;right:-30px;width:130px;height:130px;background:rgba(201,169,122,.12);border-radius:50%}
+  .header-inner{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .brand{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#f5ece0;letter-spacing:.02em}
+  .brand-sub{font-size:12px;color:#c9a97a;margin-top:2px;font-weight:300}
+  .nav-btn{background:rgba(255,255,255,.1);color:#c9a97a;border:1px solid rgba(201,169,122,.25);font-size:12px;padding:7px 11px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none;display:inline-block}
+  .nav-btn:hover{background:rgba(255,255,255,.18)}
+  .stats{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .stat{background:rgba(255,255,255,.09);border-radius:10px;padding:10px 16px;text-align:center;min-width:72px}
+  .stat-n{font-size:21px;font-weight:700;color:#f5ece0}
+  .stat-l{font-size:10px;color:#c9a97a}
+
+  .tabs-main{display:flex;gap:0;border-bottom:2px solid #e8d9c2;padding:0 18px;background:#fff}
+  .tab-main{cursor:pointer;padding:14px 20px;font-size:14px;font-weight:700;color:#a08060;border:none;background:transparent;font-family:inherit;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .18s}
+  .tab-main.active{color:#6d5339;border-bottom-color:#6d5339}
+  .tab-main:hover:not(.active){color:#6d5339;background:#fdf8f3}
+
+  .section{padding:18px;display:none}
+  .section.active{display:block}
+
+  .btn{cursor:pointer;border:none;border-radius:8px;font-family:inherit;font-weight:700;transition:all .18s;display:inline-flex;align-items:center;gap:6px}
+  .btn-primary{background:#6d5339;color:#fff;padding:10px 20px;font-size:14px}
+  .btn-primary:hover{background:#523d2a;box-shadow:0 4px 14px rgba(109,83,57,.35);transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:#8b6f4e;padding:8px 14px;border:1.5px solid #c9a97a;font-size:13px}
+  .btn-ghost:hover{background:#f5ece0}
+  .btn-success{background:#1e7e4a;color:#fff;padding:12px 20px;font-size:15px;width:100%;justify-content:center}
+  .btn-success:hover{background:#155c35;transform:translateY(-1px)}
+  .btn-success:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn-danger{background:transparent;color:#b03a2e;padding:6px 11px;border:1.5px solid #e8b4b0;font-size:12px}
+  .btn-danger:hover{background:#fdf0ef}
+  .btn-sm{padding:6px 11px;font-size:12px}
+
+  .card{background:#fff;border-radius:14px;padding:16px 18px;border:1px solid #e8d9c2;margin-bottom:10px;transition:box-shadow .2s}
+  .card:hover{box-shadow:0 4px 18px rgba(139,111,78,.13)}
+  .card-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:4px}
+  .card-sub{font-size:12px;color:#a08060}
+
+  .inp{width:100%;padding:9px 13px;border:1.5px solid #ddd0be;border-radius:8px;font-family:inherit;font-size:14px;background:#fdf8f3;color:#3a2c1e;outline:none;transition:border .18s}
+  .inp:focus{border-color:#8b6f4e}
+  select.inp{cursor:pointer}
+  .lbl{font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;display:block}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media(max-width:480px){.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}}
+
+  .form-group{display:flex;flex-direction:column;gap:14px}
+  .section-label{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:#3a2c1e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #ede0cc}
+
+  .ingredient-row{display:flex;gap:8px;align-items:center;background:#f5ece0;border-radius:8px;padding:10px 12px;margin-bottom:8px}
+  .ingredient-row select{flex:2}
+  .ingredient-row input{flex:1;min-width:60px}
+  .ingredient-row .pct-label{font-size:12px;color:#8b6f4e;font-weight:700;white-space:nowrap}
+
+  .cost-box{background:linear-gradient(135deg,#f5ece0,#ede0cc);border-radius:12px;padding:16px;margin-top:4px}
+  .cost-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px}
+  .cost-row.total{font-weight:700;font-size:16px;border-top:1px solid #c9a97a;margin-top:6px;padding-top:10px;color:#3a2c1e}
+  .cost-label{color:#6d5339}
+  .cost-value{font-weight:700;color:#3a2c1e}
+
+  .overlay{position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:14px}
+  .overlay.hidden{display:none}
+  .modal{background:#fdf8f3;border-radius:18px;padding:26px;max-width:560px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 70px rgba(30,20,10,.3)}
+  .modal-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:18px;color:#3a2c1e}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+
+  .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+  .badge-green{background:#d4edda;color:#1a5c35}
+  .badge-blue{background:#d1ecf1;color:#0c5460}
+  .badge-orange{background:#fff3cd;color:#7d5a00}
+
+  .produce-box{background:#fff;border:2px solid #6d5339;border-radius:14px;padding:20px;margin-top:16px}
+  .produce-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:14px;color:#3a2c1e}
+
+  .stock-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5ece0;border-radius:8px;margin-bottom:6px;font-size:13px}
+  .stock-ok{color:#1a5c35;font-weight:700}
+  .stock-warn{color:#b03a2e;font-weight:700}
+
+  .produit-fini-card{background:#fff;border-radius:12px;padding:14px 16px;border:1px solid #e8d9c2;margin-bottom:8px}
+  .pf-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .pf-stats{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+  .pf-stat-l{font-size:10px;color:#8b6f4e;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .pf-stat-v{font-size:13px;font-weight:700}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);padding:11px 24px;border-radius:30px;font-weight:700;font-size:13px;z-index:200;box-shadow:0 4px 18px rgba(0,0,0,.18);transition:opacity .3s;pointer-events:none}
+  .toast.success{background:#2d6a4f;color:#fff}
+  .toast.error{background:#b03a2e;color:#fff}
+  .toast.hidden{opacity:0}
+
+  .empty{text-align:center;padding:50px 20px;color:#b8a090}
+  .empty-icon{font-size:38px;margin-bottom:10px}
+  .empty-title{font-family:'Playfair Display',serif;font-size:16px;margin-bottom:5px}
+
+  .warning-box{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:13px;color:#7d5a00;margin-top:8px}
+  .info-box{background:#d1ecf1;border:1px solid #bee5eb;border-radius:8px;padding:10px 14px;font-size:13px;color:#0c5460;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="brand">✦ Elexire</div>
+      <div class="brand-sub">Atelier · Recettes & Production</div>
+    </div>
+    <a href="index.html" class="nav-btn">📦 Inventaire</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="stat-recettes">0</div><div class="stat-l">Recettes</div></div>
+    <div class="stat"><div class="stat-n" id="stat-produits">0</div><div class="stat-l">Produits finis</div></div>
+    <div class="stat"><div class="stat-n" id="stat-matieres">0</div><div class="stat-l">Matières dispo</div></div>
+  </div>
+</div>
+
+<!-- TABS PRINCIPAUX -->
+<div class="tabs-main">
+  <button class="tab-main active" onclick="switchTab('recettes')">🧪 Recettes</button>
+  <button class="tab-main" onclick="switchTab('production')">🏭 Produire</button>
+  <button class="tab-main" onclick="switchTab('stock')">✨ Produits finis</button>
+</div>
+
+<!-- ── SECTION RECETTES ── -->
+<div class="section active" id="section-recettes">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600">Mes recettes</div>
+    <button class="btn btn-primary btn-sm" onclick="openRecetteForm()">+ Nouvelle recette</button>
+  </div>
+  <div id="list-recettes"></div>
+</div>
+
+<!-- ── SECTION PRODUCTION ── -->
+<div class="section" id="section-production">
+  <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600;margin-bottom:14px">Lancer une production</div>
+
+  <div class="card">
+    <div class="form-group">
+      <div>
+        <label class="lbl">Recette à produire</label>
+        <select class="inp" id="prod-recette" onchange="onRecetteSelect()">
+          <option value="">— Choisir une recette —</option>
+        </select>
+      </div>
+      <div class="g2">
+        <div>
+          <label class="lbl">Nombre de fondants</label>
+          <input class="inp" type="number" id="prod-qte" min="1" value="1" oninput="updateProduction()">
+        </div>
+        <div>
+          <label class="lbl">Format</label>
+          <select class="inp" id="prod-format" onchange="updateProduction()">
+            <option value="10">Petit fondant (10g)</option>
+            <option value="54">Barre (54g)</option>
+            <option value="custom">Poids libre</option>
+          </select>
+        </div>
+      </div>
+      <div id="prod-poids-libre" style="display:none">
+        <label class="lbl">Poids unitaire (g)</label>
+        <input class="inp" type="number" id="prod-poids-custom" value="20" oninput="updateProduction()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Récap production -->
+  <div id="prod-recap" style="display:none">
+    <div style="margin-top:16px;font-family:'Playfair Display',serif;font-size:15px;font-weight:600;margin-bottom:10px">📋 Récapitulatif</div>
+
+    <div class="cost-box">
+      <div id="prod-cost-rows"></div>
+      <div class="cost-row total">
+        <span class="cost-label">Coût total matières</span>
+        <span class="cost-value" id="prod-total-lot">—</span>
+      </div>
+      <div class="cost-row" style="font-size:12px;color:#8b6f4e;margin-top:4px">
+        <span>Coût par fondant</span>
+        <span id="prod-cout-unite">—</span>
+      </div>
+      <div class="cost-row" style="font-size:12px;color:#8b6f4e">
+        <span>Poids total du lot</span>
+        <span id="prod-poids-total">—</span>
+      </div>
+    </div>
+
+    <!-- Vérif stock -->
+    <div style="margin-top:14px;font-family:'Playfair Display',serif;font-size:15px;font-weight:600;margin-bottom:8px">🔍 Vérification du stock</div>
+    <div id="prod-stock-check"></div>
+
+    <!-- Bouton produire -->
+    <div class="produce-box">
+      <div class="produce-title">🏭 Lancer la production</div>
+      <div id="prod-warning"></div>
+      <div style="margin-top:12px">
+        <label class="lbl">Lot / référence (optionnel)</label>
+        <input class="inp" id="prod-lot" placeholder="ex: Lot #1 - Mai 2026">
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-success" id="btn-produire" onclick="produire()">
+          ✅ Créer les fondants & décompter le stock
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SECTION PRODUITS FINIS ── -->
+<div class="section" id="section-stock">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:600">Stock produits finis</div>
+    <button class="btn btn-ghost btn-sm" onclick="clearProduitsConfirm()">🗑 Tout vider</button>
+  </div>
+  <div id="list-produits-finis"></div>
+</div>
+
+<!-- MODAL RECETTE -->
+<div class="overlay hidden" id="modal-recette" onclick="if(event.target===this)closeRecetteForm()">
+  <div class="modal">
+    <div class="modal-title" id="modal-recette-title">🧪 Nouvelle recette</div>
+    <div class="form-group">
+
+      <div class="g2">
+        <div>
+          <label class="lbl">Nom de la recette *</label>
+          <input class="inp" id="r-nom" placeholder="ex: Brioche au beurre">
+        </div>
+        <div>
+          <label class="lbl">Famille olfactive</label>
+          <select class="inp" id="r-famille">
+            <option>Gourmand</option>
+            <option>Fruité</option>
+            <option>Floral</option>
+            <option>Boisé</option>
+            <option>Bien-être</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Ingrédients -->
+      <div>
+        <div class="section-label">🧴 Composition (les % doivent totaliser 100%)</div>
+
+        <!-- Cire -->
+        <div style="margin-bottom:10px">
+          <label class="lbl">🕯️ Cire</label>
+          <div class="ingredient-row">
+            <select class="inp" id="r-cire-id" style="flex:2">
+              <option value="">— Choisir —</option>
+            </select>
+            <input class="inp" type="number" id="r-cire-pct" min="0" max="100" step="0.1" placeholder="%" oninput="updatePctTotal()">
+            <span class="pct-label">%</span>
+          </div>
+        </div>
+
+        <!-- Parfum -->
+        <div style="margin-bottom:10px">
+          <label class="lbl">🌸 Parfum</label>
+          <div class="ingredient-row">
+            <select class="inp" id="r-parfum-id" style="flex:2">
+              <option value="">— Choisir —</option>
+            </select>
+            <input class="inp" type="number" id="r-parfum-pct" min="0" max="100" step="0.1" placeholder="%" oninput="updatePctTotal()">
+            <span class="pct-label">%</span>
+          </div>
+        </div>
+
+        <!-- Colorant/Mica -->
+        <div style="margin-bottom:10px">
+          <label class="lbl">🎨 Colorant / Mica</label>
+          <div class="ingredient-row">
+            <select class="inp" id="r-colorant-id" style="flex:2">
+              <option value="">— Aucun —</option>
+            </select>
+            <input class="inp" type="number" id="r-colorant-pct" min="0" max="100" step="0.1" placeholder="%" oninput="updatePctTotal()">
+            <span class="pct-label">%</span>
+          </div>
+        </div>
+
+        <!-- Additifs dynamiques -->
+        <div>
+          <label class="lbl">⚗️ Additifs</label>
+          <div id="additifs-list"></div>
+          <button class="btn btn-ghost btn-sm" onclick="addAdditif()" style="margin-top:6px">+ Ajouter un additif</button>
+        </div>
+
+        <!-- Total % -->
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;background:#f0ede6;border-radius:8px;padding:10px 14px">
+          <span style="font-size:13px;color:#6d5339;font-weight:700">Total</span>
+          <span id="pct-total" style="font-size:16px;font-weight:700;color:#3a2c1e">0%</span>
+        </div>
+        <div id="pct-warning" style="display:none" class="warning-box">⚠️ Le total doit être égal à 100% avant d'enregistrer.</div>
+      </div>
+
+      <div>
+        <label class="lbl">Notes</label>
+        <input class="inp" id="r-notes" placeholder="Température de travail, conseils…">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeRecetteForm()">Annuler</button>
+        <button class="btn btn-primary" onclick="saveRecette()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast hidden" id="toast"></div>
+
+<script>
+// ── Clés storage ──
+const INV_KEY = 'elexire-inventaire-v1';
+const REC_KEY = 'elexire-recettes-v1';
+const PF_KEY  = 'elexire-produits-finis-v1';
+
+// ── État ──
+let inventaire = [];
+let recettes = [];
+let produitsFinis = [];
+let additifsCount = 0;
+let editRecetteId = null;
+let currentProd = null;
+let toastTimer = null;
+
+// ── Init ──
+function init() {
+  try { inventaire = JSON.parse(localStorage.getItem(INV_KEY)||'[]'); } catch(e){ inventaire=[]; }
+  try { recettes = JSON.parse(localStorage.getItem(REC_KEY)||'[]'); } catch(e){ recettes=[]; }
+  try { produitsFinis = JSON.parse(localStorage.getItem(PF_KEY)||'[]'); } catch(e){ produitsFinis=[]; }
+  render();
+}
+
+function saveRecettes() { localStorage.setItem(REC_KEY, JSON.stringify(recettes)); }
+function saveInventaire() { localStorage.setItem(INV_KEY, JSON.stringify(inventaire)); }
+function saveProduitsFinis() { localStorage.setItem(PF_KEY, JSON.stringify(produitsFinis)); }
+
+// ── Tabs ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-main').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('section-'+tab).classList.add('active');
+  if (tab==='production') populateProdSelect();
+  if (tab==='stock') renderProduitsFinis();
+}
+
+// ── Render global ──
+function render() {
+  renderStats();
+  renderRecettes();
+  renderProduitsFinis();
+}
+
+function renderStats() {
+  document.getElementById('stat-recettes').textContent = recettes.length;
+  document.getElementById('stat-produits').textContent = produitsFinis.reduce((s,p)=>s+(parseInt(p.quantite)||0),0);
+  document.getElementById('stat-matieres').textContent = inventaire.length;
+}
+
+// ── Helpers inventaire ──
+function getItemsByCategorie(cat) {
+  return inventaire.filter(i=>i.categorie===cat);
+}
+
+function getItemById(id) {
+  return inventaire.find(i=>i.id===id);
+}
+
+function getPrixPerGram(item) {
+  if (!item || !item.prix_unitaire) return null;
+  const v = parseFloat(item.prix_unitaire);
+  if (isNaN(v)) return null;
+  if (item.prix_unitaire_label === '€/L') return v / 1000; // €/ml ≈ €/g
+  if (item.prix_unitaire_label === '€/kg') return v / 1000; // €/g
+  return null;
+}
+
+function getStockGrams(item) {
+  if (!item) return 0;
+  if (item.categorie==='parfums') return (parseFloat(item.stock_ml)||0)+(parseFloat(item.stock_g)||0);
+  if (['cire','additifs','colorants'].includes(item.categorie)) return (parseFloat(item.stock_kg)||0)*1000+(parseFloat(item.stock_g)||0);
+  return 0;
+}
+
+function deductStock(itemId, gramsUsed) {
+  const item = inventaire.find(i=>i.id===itemId);
+  if (!item) return;
+  const cat = item.categorie;
+  let remaining = gramsUsed;
+
+  if (cat==='parfums') {
+    let ml = parseFloat(item.stock_ml)||0;
+    let g = parseFloat(item.stock_g)||0;
+    // Déduire de ml en priorité
+    if (ml >= remaining) { item.stock_ml = (ml - remaining).toFixed(2); remaining = 0; }
+    else { remaining -= ml; item.stock_ml = '0'; }
+    if (remaining > 0) { item.stock_g = Math.max(0, g - remaining).toFixed(2); }
+  } else if (['cire','additifs','colorants'].includes(cat)) {
+    let kg = (parseFloat(item.stock_kg)||0)*1000;
+    let g = parseFloat(item.stock_g)||0;
+    let total = kg + g;
+    total = Math.max(0, total - remaining);
+    item.stock_kg = (Math.floor(total/1000)/1).toFixed(3);
+    item.stock_g = (total%1000).toFixed(2);
+  }
+}
+
+// ── RECETTES ──
+function renderRecettes() {
+  const el = document.getElementById('list-recettes');
+  if (recettes.length===0) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🧪</div><div class="empty-title">Aucune recette</div><div style="font-size:13px">Crée ta première recette pour commencer !</div></div>`;
+    return;
+  }
+  el.innerHTML = recettes.map(r => {
+    const parfum = getItemById(r.parfum_id);
+    const cire = getItemById(r.cire_id);
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div class="card-title">${r.nom}</div>
+            <span class="badge badge-blue">${r.famille||''}</span>
+          </div>
+          <div class="card-sub" style="margin-top:4px">
+            ${cire?`🕯️ ${cire.nom} (${r.cire_pct}%)`:''} 
+            ${parfum?` · 🌸 ${parfum.nom} (${r.parfum_pct}%)`:''}
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            ${(r.additifs||[]).map(a=>{
+              const item=getItemById(a.id);
+              return item?`<span class="badge badge-orange">⚗️ ${item.nom} (${a.pct}%)</span>`:'';
+            }).join('')}
+            ${r.colorant_id&&r.colorant_pct?`<span class="badge" style="background:#f3e6fa;color:#6a1b9a">🎨 ${(getItemById(r.colorant_id)||{nom:'?'}).nom} (${r.colorant_pct}%)</span>`:''}
+          </div>
+          ${r.notes?`<div style="font-size:12px;color:#a08060;margin-top:6px;font-style:italic">💬 ${r.notes}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+          <button class="btn btn-ghost btn-sm" onclick="editRecette('${r.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecette('${r.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteRecette(id) {
+  recettes = recettes.filter(r=>r.id!==id);
+  saveRecettes(); render();
+  showToast('Recette supprimée','error');
+}
+
+// ── Formulaire recette ──
+function populateSelects() {
+  const cires = getItemsByCategorie('cire');
+  const parfums = getItemsByCategorie('parfums');
+  const colorants = getItemsByCategorie('colorants');
+  const additifsItems = getItemsByCategorie('additifs');
+
+  const toOptions = (items, empty='— Choisir —') =>
+    `<option value="">${empty}</option>` + items.map(i=>`<option value="${i.id}">${i.nom}</option>`).join('');
+
+  document.getElementById('r-cire-id').innerHTML = toOptions(cires);
+  document.getElementById('r-parfum-id').innerHTML = toOptions(parfums);
+  document.getElementById('r-colorant-id').innerHTML = toOptions(colorants,'— Aucun —');
+
+  // Additifs rows existants
+  document.querySelectorAll('.additif-select').forEach(sel=>{
+    const val = sel.value;
+    sel.innerHTML = toOptions(additifsItems,'— Choisir —');
+    sel.value = val;
+  });
+}
+
+function addAdditif(id='', pct='') {
+  additifsCount++;
+  const idx = additifsCount;
+  const additifsItems = getItemsByCategorie('additifs');
+  const opts = `<option value="">— Choisir —</option>` + additifsItems.map(i=>`<option value="${i.id}">${i.nom}</option>`).join('');
+  const div = document.createElement('div');
+  div.className = 'ingredient-row';
+  div.id = `additif-row-${idx}`;
+  div.innerHTML = `
+    <select class="inp additif-select" id="additif-id-${idx}" style="flex:2">${opts}</select>
+    <input class="inp" type="number" id="additif-pct-${idx}" min="0" max="100" step="0.1" placeholder="%" value="${pct}" oninput="updatePctTotal()">
+    <span class="pct-label">%</span>
+    <button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="removeAdditif(${idx})">✕</button>
+  `;
+  document.getElementById('additifs-list').appendChild(div);
+  if (id) document.getElementById(`additif-id-${idx}`).value = id;
+  updatePctTotal();
+}
+
+function removeAdditif(idx) {
+  document.getElementById(`additif-row-${idx}`)?.remove();
+  updatePctTotal();
+}
+
+function updatePctTotal() {
+  const vals = [
+    parseFloat(document.getElementById('r-cire-pct').value)||0,
+    parseFloat(document.getElementById('r-parfum-pct').value)||0,
+    parseFloat(document.getElementById('r-colorant-pct').value)||0,
+  ];
+  document.querySelectorAll('[id^="additif-pct-"]').forEach(el=>{
+    vals.push(parseFloat(el.value)||0);
+  });
+  const total = vals.reduce((a,b)=>a+b,0);
+  const el = document.getElementById('pct-total');
+  el.textContent = total.toFixed(1)+'%';
+  el.style.color = Math.abs(total-100)<0.1 ? '#1a5c35' : '#b03a2e';
+  document.getElementById('pct-warning').style.display = Math.abs(total-100)<0.1 ? 'none' : 'block';
+}
+
+function openRecetteForm() {
+  editRecetteId = null;
+  document.getElementById('modal-recette-title').textContent = '🧪 Nouvelle recette';
+  ['r-nom','r-cire-pct','r-parfum-pct','r-colorant-pct','r-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('additifs-list').innerHTML='';
+  additifsCount=0;
+  populateSelects();
+  updatePctTotal();
+  document.getElementById('modal-recette').classList.remove('hidden');
+}
+
+function editRecette(id) {
+  const r = recettes.find(x=>x.id===id);
+  if (!r) return;
+  editRecetteId = id;
+  document.getElementById('modal-recette-title').textContent = '✏️ Modifier la recette';
+  document.getElementById('additifs-list').innerHTML='';
+  additifsCount=0;
+  populateSelects();
+  document.getElementById('r-nom').value = r.nom||'';
+  document.getElementById('r-famille').value = r.famille||'Gourmand';
+  document.getElementById('r-cire-id').value = r.cire_id||'';
+  document.getElementById('r-cire-pct').value = r.cire_pct||'';
+  document.getElementById('r-parfum-id').value = r.parfum_id||'';
+  document.getElementById('r-parfum-pct').value = r.parfum_pct||'';
+  document.getElementById('r-colorant-id').value = r.colorant_id||'';
+  document.getElementById('r-colorant-pct').value = r.colorant_pct||'';
+  document.getElementById('r-notes').value = r.notes||'';
+  (r.additifs||[]).forEach(a=>addAdditif(a.id, a.pct));
+  updatePctTotal();
+  document.getElementById('modal-recette').classList.remove('hidden');
+}
+
+function closeRecetteForm() { document.getElementById('modal-recette').classList.add('hidden'); }
+
+function saveRecette() {
+  const nom = document.getElementById('r-nom').value.trim();
+  if (!nom) { showToast('Le nom est obligatoire','error'); return; }
+
+  const vals = [
+    parseFloat(document.getElementById('r-cire-pct').value)||0,
+    parseFloat(document.getElementById('r-parfum-pct').value)||0,
+    parseFloat(document.getElementById('r-colorant-pct').value)||0,
+  ];
+  document.querySelectorAll('[id^="additif-pct-"]').forEach(el=>vals.push(parseFloat(el.value)||0));
+  const total = vals.reduce((a,b)=>a+b,0);
+  if (Math.abs(total-100)>0.1) { showToast('Le total doit être 100%','error'); return; }
+
+  const additifs = [];
+  document.querySelectorAll('[id^="additif-row-"]').forEach(row=>{
+    const idx = row.id.replace('additif-row-','');
+    const id = document.getElementById(`additif-id-${idx}`)?.value;
+    const pct = parseFloat(document.getElementById(`additif-pct-${idx}`)?.value)||0;
+    if (id && pct>0) additifs.push({id, pct});
+  });
+
+  const recette = {
+    id: editRecetteId || Date.now().toString(),
+    nom,
+    famille: document.getElementById('r-famille').value,
+    cire_id: document.getElementById('r-cire-id').value,
+    cire_pct: parseFloat(document.getElementById('r-cire-pct').value)||0,
+    parfum_id: document.getElementById('r-parfum-id').value,
+    parfum_pct: parseFloat(document.getElementById('r-parfum-pct').value)||0,
+    colorant_id: document.getElementById('r-colorant-id').value,
+    colorant_pct: parseFloat(document.getElementById('r-colorant-pct').value)||0,
+    additifs,
+    notes: document.getElementById('r-notes').value,
+  };
+
+  if (editRecetteId) {
+    recettes = recettes.map(r=>r.id===editRecetteId?recette:r);
+    showToast('Recette mise à jour ✓');
+  } else {
+    recettes.push(recette);
+    showToast('Recette créée ✓');
+  }
+  saveRecettes(); closeRecetteForm(); render();
+}
+
+// ── PRODUCTION ──
+function populateProdSelect() {
+  const sel = document.getElementById('prod-recette');
+  sel.innerHTML = '<option value="">— Choisir une recette —</option>' +
+    recettes.map(r=>`<option value="${r.id}">${r.nom}</option>`).join('');
+}
+
+function onRecetteSelect() {
+  document.getElementById('prod-format').value = '10';
+  document.getElementById('prod-poids-libre').style.display='none';
+  updateProduction();
+}
+
+function getPoidsUnitaire() {
+  const fmt = document.getElementById('prod-format').value;
+  if (fmt==='custom') return parseFloat(document.getElementById('prod-poids-custom').value)||0;
+  return parseFloat(fmt)||10;
+}
+
+function updateProduction() {
+  const fmt = document.getElementById('prod-format').value;
+  document.getElementById('prod-poids-libre').style.display = fmt==='custom'?'block':'none';
+
+  const recetteId = document.getElementById('prod-recette').value;
+  const qte = parseInt(document.getElementById('prod-qte').value)||1;
+  const poidsUnit = getPoidsUnitaire();
+  const recap = document.getElementById('prod-recap');
+
+  if (!recetteId || !poidsUnit) { recap.style.display='none'; currentProd=null; return; }
+
+  const r = recettes.find(x=>x.id===recetteId);
+  if (!r) { recap.style.display='none'; return; }
+
+  const poidsLot = poidsUnit * qte;
+  recap.style.display='block';
+
+  // Calcul coûts et quantités
+  const ingredients = [];
+
+  const addIngredient = (id, pct, label) => {
+    if (!id || !pct) return;
+    const item = getItemById(id);
+    const gramsNeeded = (pct/100)*poidsLot;
+    const prixG = getPrixPerGram(item);
+    const cout = prixG ? gramsNeeded * prixG : null;
+    const stockDispo = item ? getStockGrams(item) : 0;
+    ingredients.push({ id, label, item, pct, gramsNeeded, cout, stockDispo });
+  };
+
+  addIngredient(r.cire_id, r.cire_pct, '🕯️ Cire');
+  addIngredient(r.parfum_id, r.parfum_pct, '🌸 Parfum');
+  addIngredient(r.colorant_id, r.colorant_pct, '🎨 Colorant');
+  (r.additifs||[]).forEach(a=>addIngredient(a.id, a.pct, '⚗️ Additif'));
+
+  currentProd = { r, qte, poidsUnit, poidsLot, ingredients };
+
+  // Afficher coûts
+  let totalCout = 0;
+  let allCoutsKnown = true;
+  const costRows = document.getElementById('prod-cost-rows');
+  costRows.innerHTML = ingredients.map(ing=>{
+    let coutStr = '—';
+    if (ing.cout!==null) { totalCout+=ing.cout; coutStr=ing.cout.toFixed(4)+' €'; }
+    else allCoutsKnown=false;
+    const nom = ing.item ? ing.item.nom : '?';
+    return `<div class="cost-row">
+      <span class="cost-label">${ing.label} — ${nom} (${ing.pct}%) · ${ing.gramsNeeded.toFixed(2)}g</span>
+      <span class="cost-value">${coutStr}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('prod-total-lot').textContent = allCoutsKnown ? totalCout.toFixed(4)+' €' : '~ '+totalCout.toFixed(4)+' € (partiel)';
+  document.getElementById('prod-cout-unite').textContent = allCoutsKnown ? (totalCout/qte).toFixed(4)+' €/fondant' : '—';
+  document.getElementById('prod-poids-total').textContent = poidsLot.toFixed(1)+' g';
+
+  // Vérif stock
+  const checkEl = document.getElementById('prod-stock-check');
+  let stockOk = true;
+  checkEl.innerHTML = ingredients.map(ing=>{
+    const ok = ing.stockDispo >= ing.gramsNeeded;
+    if (!ok) stockOk=false;
+    const nom = ing.item ? ing.item.nom : '?';
+    return `<div class="stock-item">
+      <span>${ing.label} — ${nom}</span>
+      <span>
+        <span class="${ok?'stock-ok':'stock-warn'}">
+          ${ok?'✅':'❌'} ${ing.stockDispo.toFixed(1)}g dispo / ${ing.gramsNeeded.toFixed(1)}g nécessaires
+        </span>
+      </span>
+    </div>`;
+  }).join('');
+
+  const warnEl = document.getElementById('prod-warning');
+  const btnProd = document.getElementById('btn-produire');
+  if (!stockOk) {
+    warnEl.innerHTML = '<div class="warning-box">⚠️ Stock insuffisant pour certains ingrédients. La production va quand même décompter ce qui est disponible.</div>';
+    btnProd.disabled = false;
+  } else {
+    warnEl.innerHTML = '<div class="info-box">✅ Stock suffisant pour produire ce lot !</div>';
+    btnProd.disabled = false;
+  }
+}
+
+function produire() {
+  if (!currentProd) return;
+  const { r, qte, poidsUnit, poidsLot, ingredients } = currentProd;
+  const lot = document.getElementById('prod-lot').value.trim() || `Lot #${Date.now().toString().slice(-4)}`;
+
+  // Décompter le stock
+  ingredients.forEach(ing=>{
+    if (ing.id && ing.gramsNeeded > 0) deductStock(ing.id, ing.gramsNeeded);
+  });
+  saveInventaire();
+
+  // Ajouter aux produits finis
+  const pf = {
+    id: Date.now().toString(),
+    recette_nom: r.nom,
+    recette_id: r.id,
+    lot,
+    quantite: qte,
+    poids_unit: poidsUnit,
+    format: document.getElementById('prod-format').value==='custom' ? 'Libre' : document.getElementById('prod-format').options[document.getElementById('prod-format').selectedIndex].text,
+    date: new Date().toLocaleDateString('fr-FR'),
+  };
+  produitsFinis.push(pf);
+  saveProduitsFinis();
+
+  showToast(`✅ ${qte} fondant${qte>1?'s':''} créé${qte>1?'s':''} !`);
+  render();
+
+  // Reset
+  document.getElementById('prod-recette').value='';
+  document.getElementById('prod-recap').style.display='none';
+  document.getElementById('prod-lot').value='';
+  currentProd=null;
+
+  // Switcher sur stock
+  document.querySelectorAll('.tab-main').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-main')[2].classList.add('active');
+  document.getElementById('section-stock').classList.add('active');
+}
+
+// ── PRODUITS FINIS ──
+function renderProduitsFinis() {
+  const el = document.getElementById('list-produits-finis');
+  if (produitsFinis.length===0) {
+    el.innerHTML=`<div class="empty"><div class="empty-icon">✨</div><div class="empty-title">Aucun produit fini</div><div style="font-size:13px">Lance une production pour voir tes fondants ici !</div></div>`;
+    return;
+  }
+  // Grouper par recette
+  const grouped = {};
+  produitsFinis.forEach(p=>{
+    if (!grouped[p.recette_id]) grouped[p.recette_id]={nom:p.recette_nom, lots:[]};
+    grouped[p.recette_id].lots.push(p);
+  });
+
+  el.innerHTML = Object.values(grouped).map(g=>{
+    const totalQte = g.lots.reduce((s,l)=>s+(parseInt(l.quantite)||0),0);
+    return `<div class="produit-fini-card">
+      <div class="pf-header">
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:600">🕯️ ${g.nom}</div>
+          <div style="font-size:12px;color:#a08060;margin-top:3px">${g.lots.length} lot${g.lots.length>1?'s':''}</div>
+        </div>
+        <span class="badge badge-green" style="font-size:13px;padding:5px 12px">${totalQte} fondants</span>
+      </div>
+      <div style="margin-top:10px">
+        ${g.lots.map(l=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#f5ece0;border-radius:8px;margin-bottom:5px;font-size:13px">
+            <span>📦 ${l.lot} · ${l.format} · ${l.poids_unit}g/u</span>
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-weight:700">${l.quantite} unités</span>
+              <span style="font-size:11px;color:#a08060">${l.date}</span>
+              <button class="btn btn-danger" style="padding:3px 7px;font-size:11px" onclick="deleteLot('${l.id}')">✕</button>
+            </span>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteLot(id) {
+  produitsFinis = produitsFinis.filter(p=>p.id!==id);
+  saveProduitsFinis(); renderProduitsFinis(); renderStats();
+  showToast('Lot supprimé','error');
+}
+
+function clearProduitsConfirm() {
+  if (confirm('Vider tout le stock de produits finis ?')) {
+    produitsFinis=[];
+    saveProduitsFinis(); renderProduitsFinis(); renderStats();
+    showToast('Stock vidé','error');
+  }
+}
+
+// ── Toast ──
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='toast hidden',3000);
+}
+
+init();
+</script>
+</body>
+</html>
