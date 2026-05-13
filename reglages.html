@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexire — Réglages</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fdf8f3;font-family:Georgia,serif;color:#3a2c1e;min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#c9a97a;border-radius:4px}
+.header{background:linear-gradient(140deg,#2e1f0e,#6d5339);padding:24px 20px 16px}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:700;color:#f5ece0;letter-spacing:.02em}
+.brand-sub{font-size:12px;color:#c9a97a;margin-top:2px}
+.hbtns{display:flex;gap:7px;flex-wrap:wrap}
+.hbtn{background:rgba(255,255,255,.12);color:#c9a97a;border:1px solid rgba(201,169,122,.3);font-size:12px;padding:7px 12px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none;display:inline-block}
+.hbtn:hover{background:rgba(255,255,255,.2)}
+
+.content{padding:18px;max-width:600px;margin:0 auto;padding-bottom:100px}
+
+.section{background:#fff;border-radius:14px;border:1px solid #e8d9c2;margin-bottom:16px;overflow:hidden}
+.section-header{background:linear-gradient(135deg,#f5ece0,#ede0cc);padding:14px 18px;display:flex;align-items:center;gap:8px}
+.section-icon{font-size:20px}
+.section-title{font-size:15px;font-weight:700;color:#3a2c1e}
+.section-sub{font-size:12px;color:#8b6f4e;margin-top:1px}
+.section-body{padding:16px 18px;display:flex;flex-direction:column;gap:13px}
+
+.inp{width:100%;padding:9px 12px;border:1.5px solid #ddd0be;border-radius:8px;font-family:inherit;font-size:14px;background:#fdf8f3;color:#3a2c1e;outline:none;transition:border .15s}
+.inp:focus{border-color:#8b6f4e}
+select.inp{cursor:pointer}
+.lbl{font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:480px){.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}}
+.hint{font-size:12px;color:#a08060;margin-top:4px}
+
+.plat-bloc{background:#f5ece0;border-radius:10px;padding:12px 14px}
+.plat-name{font-size:13px;font-weight:700;color:#3a2c1e;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* Barre save fixe */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e8d9c2;padding:14px 18px;display:flex;gap:10px;align-items:center;z-index:50}
+.btn-save{flex:1;background:#6d5339;color:#fff;border:none;border-radius:8px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-save:hover{background:#523d2a}
+.btn-reset{background:transparent;color:#b03a2e;border:1.5px solid #e8b4b0;border-radius:8px;padding:11px 16px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.btn-reset:hover{background:#fdf0ef}
+
+.saved-badge{background:#d4edda;color:#1a5c35;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;display:none}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:28px;font-weight:700;font-size:13px;z-index:200;pointer-events:none;opacity:1;transition:opacity .3s}
+.toast.s{background:#2d6a4f;color:#fff}
+.toast.e{background:#b03a2e;color:#fff}
+.toast.hi{opacity:0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <div>
+      <div class="brand">✦ Elexire</div>
+      <div class="brand-sub">Réglages globaux</div>
+    </div>
+    <div class="hbtns">
+      <a href="index.html" class="hbtn">📦 Inventaire</a>
+      <a href="atelier.html" class="hbtn">🧪 Atelier</a>
+      <a href="prix.html" class="hbtn">💰 Prix</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Main d'œuvre -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">👐</div>
+      <div>
+        <div class="section-title">Main d'œuvre</div>
+        <div class="section-sub">Ton taux horaire par défaut</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="g2">
+        <div>
+          <label class="lbl">Taux horaire (€/h)</label>
+          <input class="inp" type="number" step="0.5" id="r-taux" placeholder="ex: 15">
+          <div class="hint">Appliqué automatiquement dans le calculateur</div>
+        </div>
+        <div>
+          <label class="lbl">Mode temps par défaut</label>
+          <select class="inp" id="r-temps-mode">
+            <option value="lot">Temps pour le lot entier</option>
+            <option value="unite">Temps par unité</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charges -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🏛️</div>
+      <div>
+        <div class="section-title">Charges & fiscalité</div>
+        <div class="section-sub">Taux applicables à ton activité</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="g2">
+        <div>
+          <label class="lbl">Taux URSSAF (%)</label>
+          <input class="inp" type="number" step="0.1" id="r-urssaf" value="22">
+          <div class="hint">22% en micro-entreprise de services</div>
+        </div>
+        <div>
+          <label class="lbl">Marge souhaitée par défaut (%)</label>
+          <input class="inp" type="number" id="r-marge" placeholder="ex: 40">
+          <div class="hint">Pré-remplie dans le calculateur</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trésorerie -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💼</div>
+      <div>
+        <div class="section-title">Réserve trésorerie</div>
+        <div class="section-sub">% mis de côté pour réinvestir dans la boîte</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="g2">
+        <div>
+          <label class="lbl">Réserve trésorerie (%)</label>
+          <input class="inp" type="number" step="0.5" id="r-tresorerie" placeholder="ex: 10">
+          <div class="hint">Déduit du bénéfice net, affiché séparément</div>
+        </div>
+        <div>
+          <label class="lbl">Objectif trésorerie (€)</label>
+          <input class="inp" type="number" id="r-tresorerie-obj" placeholder="ex: 500">
+          <div class="hint">Pour suivre ta progression</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amortissement -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔧</div>
+      <div>
+        <div class="section-title">Amortissement matériel</div>
+        <div class="section-sub">Coût amorti par unité produite</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="g2">
+        <div>
+          <label class="lbl">Amortissement par unité (€)</label>
+          <input class="inp" type="number" step="0.001" id="r-amort" placeholder="ex: 0.05">
+          <div class="hint">Moules, balance, plaques de chauffe…</div>
+        </div>
+        <div>
+          <label class="lbl">Arrondi prix de vente</label>
+          <select class="inp" id="r-arrondi">
+            <option value="0.05">Au 0.05 € près</option>
+            <option value="0.10">Au 0.10 € près</option>
+            <option value="0.50">Au 0.50 € près</option>
+            <option value="1.00">À l'euro près</option>
+            <option value="0">Pas d'arrondi</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expédition -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🚚</div>
+      <div>
+        <div class="section-title">Expédition</div>
+        <div class="section-sub">Frais de livraison par défaut</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="g3">
+        <div>
+          <label class="lbl">Mondial Relay (€)</label>
+          <input class="inp" type="number" step="0.01" id="r-relay" placeholder="ex: 3.50">
+        </div>
+        <div>
+          <label class="lbl">Colissimo (€)</label>
+          <input class="inp" type="number" step="0.01" id="r-colissimo" placeholder="ex: 5.90">
+        </div>
+        <div>
+          <label class="lbl">Lettre suivie (€)</label>
+          <input class="inp" type="number" step="0.01" id="r-lettre" placeholder="ex: 2.10">
+        </div>
+      </div>
+      <div>
+        <label class="lbl">Mode expédition par défaut</label>
+        <select class="inp" id="r-exped-defaut">
+          <option value="relay">Mondial Relay</option>
+          <option value="colissimo">Colissimo</option>
+          <option value="lettre">Lettre suivie</option>
+          <option value="0">Pas d'expédition</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plateformes -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🏪</div>
+      <div>
+        <div class="section-title">Plateformes de vente</div>
+        <div class="section-sub">Commissions et frais fixes par canal</div>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <div class="plat-bloc">
+        <div class="plat-name">🛍️ Vente directe (marchés, boutique)</div>
+        <div class="g2">
+          <div><label class="lbl">Commission (%)</label><input class="inp" type="number" step="0.1" id="r-direct-com" value="0"></div>
+          <div><label class="lbl">Frais fixes (€)</label><input class="inp" type="number" step="0.01" id="r-direct-fix" value="0"></div>
+        </div>
+      </div>
+
+      <div class="plat-bloc">
+        <div class="plat-name">📱 Instagram / TikTok Shop</div>
+        <div class="g2">
+          <div><label class="lbl">Commission (%)</label><input class="inp" type="number" step="0.1" id="r-social-com" value="5"></div>
+          <div><label class="lbl">Frais fixes (€)</label><input class="inp" type="number" step="0.01" id="r-social-fix" value="0"></div>
+        </div>
+      </div>
+
+      <div class="plat-bloc">
+        <div class="plat-name">🛒 PrestaShop</div>
+        <div class="g2">
+          <div><label class="lbl">Commission (%)</label><input class="inp" type="number" step="0.1" id="r-presta-com" value="0"></div>
+          <div><label class="lbl">Frais fixes (€)</label><input class="inp" type="number" step="0.01" id="r-presta-fix" value="0.30"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Informations entreprise -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🏢</div>
+      <div>
+        <div class="section-title">Informations entreprise</div>
+        <div class="section-sub">Pour tes documents et exports</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="g2">
+        <div>
+          <label class="lbl">Nom de la marque</label>
+          <input class="inp" id="r-marque" value="Elexire">
+        </div>
+        <div>
+          <label class="lbl">Statut juridique</label>
+          <input class="inp" id="r-statut" placeholder="ex: Micro-entreprise">
+        </div>
+      </div>
+      <div class="g2">
+        <div>
+          <label class="lbl">SIRET</label>
+          <input class="inp" id="r-siret" placeholder="ex: 123 456 789 00012">
+        </div>
+        <div>
+          <label class="lbl">Monnaie</label>
+          <select class="inp" id="r-monnaie">
+            <option value="€">Euro (€)</option>
+            <option value="CHF">Franc suisse (CHF)</option>
+            <option value="£">Livre sterling (£)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Barre de sauvegarde -->
+<div class="save-bar">
+  <span class="saved-badge" id="saved-badge">✓ Sauvegardé</span>
+  <button class="btn-reset" onclick="resetReglages()">↺ Réinitialiser</button>
+  <button class="btn-save" onclick="saveReglages()">💾 Sauvegarder les réglages</button>
+</div>
+
+<div class="toast hi" id="toast"></div>
+
+<script>
+var KEY='elexire-reglages-v1';
+var toastT=null;
+
+var DEFAULTS={
+  taux:'',tempsMode:'lot',
+  urssaf:'22',marge:'',
+  tresorerie:'',tresorerieObj:'',
+  amort:'',arrondi:'0.05',
+  relay:'',colissimo:'',lettre:'',expedDefaut:'relay',
+  directCom:'0',directFix:'0',
+  socialCom:'5',socialFix:'0',
+  prestaCom:'0',prestaFix:'0.30',
+  marque:'Elexire',statut:'',siret:'',monnaie:'€'
+};
+
+var FIELDS={
+  taux:'r-taux',tempsMode:'r-temps-mode',
+  urssaf:'r-urssaf',marge:'r-marge',
+  tresorerie:'r-tresorerie',tresorerieObj:'r-tresorerie-obj',
+  amort:'r-amort',arrondi:'r-arrondi',
+  relay:'r-relay',colissimo:'r-colissimo',lettre:'r-lettre',expedDefaut:'r-exped-defaut',
+  directCom:'r-direct-com',directFix:'r-direct-fix',
+  socialCom:'r-social-com',socialFix:'r-social-fix',
+  prestaCom:'r-presta-com',prestaFix:'r-presta-fix',
+  marque:'r-marque',statut:'r-statut',siret:'r-siret',monnaie:'r-monnaie'
+};
+
+function load(){
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){}
+  var reglages=Object.assign({},DEFAULTS,saved);
+  Object.keys(FIELDS).forEach(function(key){
+    var el=document.getElementById(FIELDS[key]);
+    if(el&&reglages[key]!==undefined)el.value=reglages[key];
+  });
+}
+
+function saveReglages(){
+  var reglages={};
+  Object.keys(FIELDS).forEach(function(key){
+    var el=document.getElementById(FIELDS[key]);
+    if(el)reglages[key]=el.value;
+  });
+  localStorage.setItem(KEY,JSON.stringify(reglages));
+  var badge=document.getElementById('saved-badge');
+  badge.style.display='inline-flex';
+  setTimeout(function(){badge.style.display='none';},3000);
+  toast('Réglages sauvegardés ✓','s');
+}
+
+function resetReglages(){
+  if(!confirm('Réinitialiser tous les réglages aux valeurs par défaut ?'))return;
+  Object.keys(FIELDS).forEach(function(key){
+    var el=document.getElementById(FIELDS[key]);
+    if(el)el.value=DEFAULTS[key]||'';
+  });
+  localStorage.removeItem(KEY);
+  toast('Réglages réinitialisés','e');
+}
+
+function toast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+(type==='e'?'e':'s');
+  clearTimeout(toastT);
+  toastT=setTimeout(function(){t.className='toast hi';},3000);
+}
+
+load();
+</script>
+</body>
+</html>
