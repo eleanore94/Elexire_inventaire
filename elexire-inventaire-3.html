@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexire — Inventaire</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fdf8f3;font-family:Georgia,serif;color:#3a2c1e;min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#c9a97a;border-radius:4px}
+.header{background:linear-gradient(140deg,#2e1f0e,#6d5339);padding:24px 20px 16px}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:700;color:#f5ece0;letter-spacing:.02em}
+.brand-sub{font-size:12px;color:#c9a97a;margin-top:2px}
+.hbtns{display:flex;gap:7px;flex-wrap:wrap}
+.hbtn{background:rgba(255,255,255,.12);color:#c9a97a;border:1px solid rgba(201,169,122,.3);font-size:12px;padding:7px 12px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none;display:inline-block}
+.hbtn:hover{background:rgba(255,255,255,.2)}
+.stats{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.09);border-radius:10px;padding:9px 14px;text-align:center;min-width:65px}
+.stat-n{font-size:18px;font-weight:700;color:#f5ece0}
+.stat-n.w{color:#f39c12}
+.stat-l{font-size:10px;color:#c9a97a}
+
+/* Onglets principaux */
+.main-tabs{display:flex;border-bottom:2px solid #e8d9c2;background:#fff;overflow-x:auto}
+.main-tab{cursor:pointer;padding:13px 20px;font-size:14px;font-weight:700;color:#a08060;border:none;background:transparent;font-family:inherit;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.main-tab.on{color:#6d5339;border-bottom-color:#6d5339}
+.main-tab:hover:not(.on){color:#6d5339;background:#fdf8f3}
+.main-page{display:none;padding-bottom:90px}
+.main-page.on{display:block}
+
+/* Matières premières */
+.alert-bar{background:#fff8e1;border-bottom:1px solid #ffe082;padding:10px 18px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bdg{display:inline-flex;align-items:center;padding:2px 9px;border-radius:11px;font-size:11px;font-weight:700}
+.bdg-w{background:#fff3cd;color:#7d5a00;border:1px solid #ffc107}
+.toolbar{padding:13px 18px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.inp{width:100%;padding:9px 12px;border:1.5px solid #ddd0be;border-radius:8px;font-family:inherit;font-size:14px;background:#fdf8f3;color:#3a2c1e;outline:none;transition:border .15s}
+.inp:focus{border-color:#8b6f4e}
+select.inp{cursor:pointer}
+.btn{cursor:pointer;border:none;border-radius:8px;font-family:inherit;font-weight:700;display:inline-flex;align-items:center;gap:5px;transition:background .15s}
+.bp{background:#6d5339;color:#fff;padding:9px 18px;font-size:14px;white-space:nowrap}
+.bp:hover{background:#523d2a}
+.bg{background:transparent;color:#8b6f4e;padding:7px 13px;border:1.5px solid #c9a97a;font-size:13px}
+.bg:hover{background:#f5ece0}
+.bd{background:transparent;color:#b03a2e;padding:5px 10px;border:1.5px solid #e8b4b0;font-size:12px}
+.bd:hover{background:#fdf0ef}
+.bsm{padding:5px 10px;font-size:12px}
+.bgreen{background:#1e7e4a;color:#fff;padding:10px 16px;font-size:14px;border-radius:8px;border:none;font-family:inherit;font-weight:700;cursor:pointer;width:100%}
+.bgreen:hover{background:#155c35}
+.controls{padding:0 18px 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sbar{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;flex:1;min-width:0}
+.tab{cursor:pointer;padding:6px 13px;border-radius:18px;font-size:13px;font-weight:700;border:none;background:transparent;color:#8b6f4e;white-space:nowrap;font-family:inherit}
+.tab.on{background:#6d5339;color:#fff}
+.tab:hover:not(.on){background:#ede0cc}
+.sort-sel{padding:7px 10px;border:1.5px solid #ddd0be;border-radius:8px;font-family:inherit;font-size:13px;background:#fdf8f3;color:#3a2c1e;outline:none;cursor:pointer}
+.list{padding:0 18px;display:flex;flex-direction:column;gap:9px}
+.card{background:#fff;border-radius:12px;padding:15px 17px;border:1px solid #e8d9c2;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 16px rgba(139,111,78,.13)}
+.card.low{border-left:3px solid #e67e22}
+.card-in{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card-name{font-size:15px;font-weight:700}
+.card-cat{font-size:12px;color:#a08060;margin-top:3px}
+.card-stats{display:flex;gap:16px;margin-top:9px;flex-wrap:wrap}
+.csl{font-size:10px;color:#8b6f4e;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.csv{font-size:14px;font-weight:700}
+.csv.acc{color:#6d5339}
+.card-notes{font-size:12px;color:#a08060;margin-top:6px;font-style:italic}
+.card-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+
+/* Produits finis */
+.pf-toolbar{padding:14px 18px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pf-filters{padding:0 18px 12px;display:flex;gap:8px;flex-wrap:wrap}
+.fsel{padding:7px 10px;border:1.5px solid #ddd0be;border-radius:8px;font-family:inherit;font-size:13px;background:#fdf8f3;color:#3a2c1e;outline:none;cursor:pointer;flex:1;min-width:100px}
+.frst{padding:7px 12px;background:transparent;border:1.5px solid #c9a97a;border-radius:8px;color:#8b6f4e;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.frst:hover{background:#f5ece0}
+.pf-card{background:#fff;border-radius:12px;border:1px solid #e8d9c2;margin-bottom:9px;overflow:hidden}
+.pf-card.low-stock{border-left:3px solid #e67e22}
+.pf-card.no-stock{border-left:3px solid #e74c3c;opacity:.8}
+.pf-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:14px 16px;cursor:pointer}
+.pf-nom{font-size:15px;font-weight:700}
+.pf-meta{font-size:12px;color:#a08060;margin-top:3px}
+.pf-badge{font-size:20px;font-weight:700;color:#1a5c35;white-space:nowrap}
+.pf-badge.warn{color:#7d5a00}
+.pf-badge.empty{color:#b03a2e}
+.pf-tags{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 10px}
+.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700}
+.tb{background:#d1ecf1;color:#0c5460}
+.tg{background:#d4edda;color:#1a5c35}
+.to{background:#fff3cd;color:#7d5a00}
+.tr{background:#fde8e8;color:#9b1c1c}
+.tp{background:#f3e6fa;color:#6a1b9a}
+.pf-lots{padding:0 16px 12px;display:none}
+.pf-lots.open{display:block}
+.lot-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#f5ece0;border-radius:8px;margin-bottom:5px;font-size:13px;flex-wrap:wrap;gap:5px}
+.pf-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 12px}
+.pf-stat{background:#f5ece0;border-radius:8px;padding:8px 10px;text-align:center}
+.pf-stat-l{font-size:10px;color:#8b6f4e;text-transform:uppercase;letter-spacing:.05em}
+.pf-stat-v{font-size:15px;font-weight:700;color:#3a2c1e;margin-top:2px}
+
+/* Vide */
+.empty{text-align:center;padding:60px 20px;color:#b8a090}
+.empty-i{font-size:40px;margin-bottom:9px}
+.empty-t{font-size:16px;margin-bottom:5px;font-weight:700}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:14px}
+.overlay.hi{display:none}
+.modal{background:#fdf8f3;border-radius:16px;padding:24px;max-width:540px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(30,20,10,.3)}
+.mtitle{font-size:18px;font-weight:700;margin-bottom:16px;color:#3a2c1e}
+.fgrp{display:flex;flex-direction:column;gap:13px}
+.lbl{font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.g2{grid-template-columns:1fr}}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.pcalc{background:#f0ede6;border-radius:8px;padding:8px 12px;font-size:13px;color:#5c4020}
+.dz{border:2px dashed #c9a97a;border-radius:9px;padding:14px;text-align:center;cursor:pointer;background:#fdf8f3;margin-top:8px}
+.dz:hover{background:#f5ece0}
+.mbox{border-radius:8px;padding:9px 13px;font-size:13px;margin-top:7px;font-weight:600;display:none}
+.mok{background:#eaf4ee;color:#1a5c35;border:1px solid #a8d9b8}
+.merr{background:#fdf0ef;color:#8b1a10;border:1px solid #e8b4b0}
+.div{border:none;border-top:1px solid #ede0cc;margin:14px 0}
+.hint{font-size:12px;color:#a08060;margin-top:5px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:28px;font-weight:700;font-size:13px;z-index:200;pointer-events:none;opacity:1;transition:opacity .3s}
+.toast.s{background:#2d6a4f;color:#fff}
+.toast.e{background:#b03a2e;color:#fff}
+.toast.hi{opacity:0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <div>
+      <div class="brand">✦ Elexire</div>
+      <div class="brand-sub">Inventaire</div>
+    </div>
+    <div class="hbtns">
+      <button class="hbtn" onclick="openBackup()">💾 Backup</button>
+      <a href="atelier.html" class="hbtn">🧪</a>
+      <a href="prix.html" class="hbtn">💰</a>
+      <a href="ventes.html" class="hbtn">🛍️</a>
+      <a href="reglages.html" class="hbtn">⚙️</a>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="sn-mat">0</div><div class="stat-l">Matières</div></div>
+    <div class="stat"><div class="stat-n" id="sn-alert">0</div><div class="stat-l">Alertes</div></div>
+    <div class="stat"><div class="stat-n" id="sn-pf">0</div><div class="stat-l">Produits finis</div></div>
+    <div class="stat"><div class="stat-n" id="sn-pf-u">0</div><div class="stat-l">Unités dispo</div></div>
+  </div>
+</div>
+
+<!-- ONGLETS PRINCIPAUX -->
+<div class="main-tabs">
+  <button class="main-tab on" onclick="goMain('matieres',this)">📦 Matières premières</button>
+  <button class="main-tab" onclick="goMain('produits',this)">✨ Produits finis</button>
+</div>
+
+<!-- ══ PAGE MATIÈRES PREMIÈRES ══ -->
+<div class="main-page on" id="mp-matieres">
+
+  <div class="alert-bar" id="alert-bar" style="display:none">
+    <span>⚠️</span>
+    <span style="font-weight:700;font-size:13px;color:#7d5a00">Stock bas :</span>
+    <span id="alert-items"></span>
+  </div>
+
+  <div class="toolbar">
+    <input class="inp" id="search" placeholder="🔍 Rechercher…" oninput="renderList()" style="flex:1;min-width:120px">
+    <button class="btn bp" onclick="openForm()">+ Ajouter</button>
+  </div>
+
+  <div class="controls">
+    <div class="sbar" id="tabs"></div>
+    <select class="sort-sel" id="sort" onchange="renderList()">
+      <option value="nom-asc">A → Z</option>
+      <option value="nom-desc">Z → A</option>
+      <option value="prix-asc">Prix ↑</option>
+      <option value="prix-desc">Prix ↓</option>
+      <option value="stock-asc">Stock ↑</option>
+      <option value="stock-desc">Stock ↓</option>
+      <option value="recent">Récent</option>
+    </select>
+  </div>
+
+  <div class="list" id="list"></div>
+</div>
+
+<!-- ══ PAGE PRODUITS FINIS ══ -->
+<div class="main-page" id="mp-produits">
+
+  <div class="pf-toolbar">
+    <input class="inp" id="pf-search" placeholder="🔍 Rechercher un produit…" oninput="rendPF()" style="flex:1;min-width:120px">
+  </div>
+
+  <div class="pf-filters">
+    <select class="fsel" id="pf-famille" onchange="rendPF()">
+      <option value="">Toutes les familles</option>
+      <option>Gourmand</option><option>Fruité</option><option>Floral</option><option>Boisé</option><option>Bien-être</option>
+    </select>
+    <select class="fsel" id="pf-format" onchange="rendPF()">
+      <option value="">Tous les formats</option>
+      <option value="10g">Petit fondant (10g)</option>
+      <option value="54g">Barre (54g)</option>
+      <option value="Libre">Libre</option>
+    </select>
+    <select class="fsel" id="pf-stock" onchange="rendPF()">
+      <option value="">Tous les stocks</option>
+      <option value="dispo">En stock</option>
+      <option value="bas">Stock bas (&lt;5)</option>
+      <option value="vide">Épuisé</option>
+    </select>
+    <select class="fsel" id="pf-sort" onchange="rendPF()">
+      <option value="nom">A → Z</option>
+      <option value="qte-desc">Stock ↓</option>
+      <option value="qte-asc">Stock ↑</option>
+      <option value="date">Plus récent</option>
+    </select>
+    <button class="frst" onclick="rstPF()">↺</button>
+  </div>
+
+  <div style="padding:0 18px" id="pf-list"></div>
+</div>
+
+<!-- MODAL PRODUIT (matières) -->
+<div class="overlay hi" id="m-prod" onclick="if(event.target===this)closeForm()">
+  <div class="modal">
+    <div class="mtitle" id="m-prod-t">✦ Nouveau produit</div>
+    <div class="fgrp">
+      <div><label class="lbl">Nom *</label><input class="inp" id="f-nom" placeholder="Ex: Parfum Brioche au beurre"></div>
+      <div><label class="lbl">Catégorie</label>
+        <select class="inp" id="f-cat" onchange="updFields()">
+          <option value="parfums">🌸 Parfums</option>
+          <option value="cire">🕯️ Cire</option>
+          <option value="additifs">⚗️ Additifs</option>
+          <option value="colorants">🎨 Colorants</option>
+          <option value="packaging">📦 Packaging</option>
+          <option value="consommables">🏷️ Consommables</option>
+        </select>
+      </div>
+      <div id="f-parfums" class="g2">
+        <div><label class="lbl">Quantité (ml)</label><input class="inp" id="f-ml" type="number" placeholder="ex: 30" oninput="updCalc()"></div>
+        <div><label class="lbl">Quantité (g)</label><input class="inp" id="f-g1" type="number" placeholder="ex: 28" oninput="updCalc()"></div>
+      </div>
+      <div id="f-pond" class="g2" style="display:none">
+        <div><label class="lbl">Quantité (kg)</label><input class="inp" id="f-kg" type="number" placeholder="ex: 5" oninput="updCalc()"></div>
+        <div><label class="lbl">Quantité (g)</label><input class="inp" id="f-g2" type="number" placeholder="ex: 500" oninput="updCalc()"></div>
+      </div>
+      <div id="f-unite" style="display:none"><label class="lbl">Quantité (unités)</label><input class="inp" id="f-u" type="number" placeholder="ex: 100" oninput="updCalc()"></div>
+      <div class="g2">
+        <div><label class="lbl">Prix achat TTC (€)</label><input class="inp" id="f-prix" type="number" step="0.01" placeholder="ex: 4.14" oninput="updCalc()"></div>
+        <div><label class="lbl">Seuil alerte</label><input class="inp" id="f-seuil" type="number" placeholder="g, ml ou unités"></div>
+      </div>
+      <div id="f-calc" class="pcalc" style="display:none"></div>
+      <div><label class="lbl">Fournisseur</label><input class="inp" id="f-four" placeholder="ex: Le Petit Grassois"></div>
+      <div><label class="lbl">Notes</label><input class="inp" id="f-notes" placeholder="Référence, lot…"></div>
+      <div class="mfoot">
+        <button class="btn bg" onclick="closeForm()">Annuler</button>
+        <button class="btn bp" onclick="saveItem()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AJOUT STOCK -->
+<div class="overlay hi" id="m-stock" onclick="if(event.target===this)closeStock()">
+  <div class="modal">
+    <div class="mtitle" id="m-stock-t">➕ Ajouter du stock</div>
+    <p style="font-size:13px;color:#8b6f4e;margin-bottom:16px" id="m-stock-sub"></p>
+    <div class="fgrp">
+      <div id="m-stock-fields"></div>
+      <div><label class="lbl">Notes (optionnel)</label><input class="inp" id="m-stock-notes" placeholder="ex: Commande mai 2026"></div>
+      <div class="mfoot">
+        <button class="btn bg" onclick="closeStock()">Annuler</button>
+        <button class="btn bp" onclick="saveStock()">Ajouter au stock</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BACKUP -->
+<div class="overlay hi" id="m-bak" onclick="if(event.target===this)closeBackup()">
+  <div class="modal">
+    <div class="mtitle">💾 Sauvegarde & Restauration</div>
+    <p style="font-size:13px;color:#8b6f4e;margin-bottom:16px">Exporte un CSV à ouvrir dans Google Sheets ou Excel.</p>
+    <button class="bgreen" id="btn-exp" onclick="exportCSV()">⬇️ Télécharger le CSV (matières)</button>
+    <hr class="div">
+    <div class="dz" onclick="document.getElementById('fi').click()">
+      <div style="font-size:22px;margin-bottom:4px">📂</div>
+      <div style="font-weight:700;font-size:13px;color:#6d5339">Restaurer depuis un CSV</div>
+      <div style="font-size:11px;color:#a08060;margin-top:2px">Clique pour choisir</div>
+    </div>
+    <input type="file" id="fi" accept=".csv" style="display:none" onchange="importCSV(event)">
+    <div class="mbox" id="imp-msg"></div>
+    <div class="mfoot"><button class="btn bg bsm" onclick="closeBackup()">Fermer</button></div>
+  </div>
+</div>
+
+<div class="toast hi" id="toast"></div>
+
+<script>
+var KEY='elexire-inventaire-v1';
+var PF_KEY='elexire-produits-finis-v1';
+var VK='elexire-ventes-v1';
+var COLS=['id','nom','categorie','stock_ml','stock_g','stock_kg','stock_unite','prix_achat_ttc','prix_unitaire','prix_unitaire_label','fournisseur','seuil_alerte','notes'];
+var CATS={parfums:{label:'Parfums',icon:'🌸'},cire:{label:'Cire',icon:'🕯️'},additifs:{label:'Additifs',icon:'⚗️'},colorants:{label:'Colorants',icon:'🎨'},packaging:{label:'Packaging',icon:'📦'},consommables:{label:'Consommables',icon:'🏷️'}};
+
+var items=[],pfs=[],ventes=[];
+var activeTab='tous',editId=null,stockItemId=null,toastT=null;
+
+function load(){
+  try{items=JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){items=[];}
+  try{pfs=JSON.parse(localStorage.getItem(PF_KEY)||'[]');}catch(e){pfs=[];}
+  try{ventes=JSON.parse(localStorage.getItem(VK)||'[]');}catch(e){ventes=[];}
+  render();
+}
+
+function save(){localStorage.setItem(KEY,JSON.stringify(items));}
+
+// ── Navigation principale ──
+function goMain(name,btn){
+  document.querySelectorAll('.main-tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.main-page').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('mp-'+name).classList.add('on');
+  if(name==='produits'){
+    // Recharger depuis localStorage au cas où l'atelier aurait mis à jour
+    try{pfs=JSON.parse(localStorage.getItem(PF_KEY)||'[]');}catch(e){pfs=[];}
+    try{ventes=JSON.parse(localStorage.getItem(VK)||'[]');}catch(e){ventes=[];}
+    rendPF();
+  }
+}
+
+// ── Stats globales ──
+function render(){updStats();updAlerts();updTabs();renderList();}
+
+function updStats(){
+  var alerts=items.filter(isLow);
+  var cats=Object.keys(CATS).filter(function(c){return items.some(function(i){return i.categorie===c;});}).length;
+  document.getElementById('sn-mat').textContent=items.length;
+  var an=document.getElementById('sn-alert');
+  an.textContent=alerts.length;an.className='stat-n'+(alerts.length>0?' w':'');
+  // Produits finis — calcul du stock réel (produits - vendus)
+  var pfStock=getPFStockGlobal();
+  document.getElementById('sn-pf').textContent=Object.keys(pfStock).length;
+  var totalUnites=Object.values(pfStock).reduce(function(s,v){return s+v;},0);
+  document.getElementById('sn-pf-u').textContent=totalUnites;
+}
+
+// ── Calcul stock produits finis (produits - vendus + annulés) ──
+function getPFStockGlobal(){
+  // Grouper les lots produits par recette
+  var stock={};
+  pfs.forEach(function(p){
+    if(!stock[p.rec_nom])stock[p.rec_nom]={qte:0,famille:p.famille,lots:[]};
+    stock[p.rec_nom].qte+=(parseInt(p.quantite)||0);
+    stock[p.rec_nom].lots.push(p);
+  });
+  // Déduire les ventes
+  ventes.forEach(function(v){
+    if(stock[v.produit]){
+      stock[v.produit].qte=Math.max(0,stock[v.produit].qte-(parseInt(v.qte)||0));
+    }
+  });
+  return stock;
+}
+
+function getPFStockDetail(){
+  // Par lot avec détails
+  var stock={};
+  pfs.forEach(function(p){
+    if(!stock[p.rec_nom])stock[p.rec_nom]={
+      nom:p.rec_nom,famille:p.famille||'',
+      qte_prod:0,qte_vendu:0,qte_dispo:0,
+      formats:[],dates:[],lots:[]
+    };
+    var s=stock[p.rec_nom];
+    s.qte_prod+=(parseInt(p.quantite)||0);
+    if(p.format&&!s.formats.includes(p.format))s.formats.push(p.format);
+    if(p.date&&!s.dates.includes(p.date))s.dates.push(p.date);
+    s.lots.push(p);
+  });
+  // Ventes
+  ventes.forEach(function(v){
+    if(stock[v.produit]){
+      stock[v.produit].qte_vendu+=(parseInt(v.qte)||0);
+    }
+  });
+  // Calculer dispo
+  Object.values(stock).forEach(function(s){
+    s.qte_dispo=Math.max(0,s.qte_prod-s.qte_vendu);
+  });
+  return stock;
+}
+
+// ── PRODUITS FINIS ──
+function rstPF(){
+  ['pf-famille','pf-format','pf-stock','pf-sort'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('pf-sort').value='nom';
+  document.getElementById('pf-search').value='';
+  rendPF();
+}
+
+function rendPF(){
+  var search=document.getElementById('pf-search').value.toLowerCase();
+  var filtFam=document.getElementById('pf-famille').value;
+  var filtFmt=document.getElementById('pf-format').value;
+  var filtStock=document.getElementById('pf-stock').value;
+  var sort=document.getElementById('pf-sort').value;
+
+  var stock=getPFStockDetail();
+  var items=Object.values(stock);
+
+  // Filtres
+  if(search)items=items.filter(function(s){return s.nom.toLowerCase().indexOf(search)>=0;});
+  if(filtFam)items=items.filter(function(s){return s.famille===filtFam;});
+  if(filtFmt)items=items.filter(function(s){return s.formats.some(function(f){return f.toLowerCase().indexOf(filtFmt.toLowerCase())>=0;});});
+  if(filtStock==='dispo')items=items.filter(function(s){return s.qte_dispo>0;});
+  else if(filtStock==='bas')items=items.filter(function(s){return s.qte_dispo>0&&s.qte_dispo<5;});
+  else if(filtStock==='vide')items=items.filter(function(s){return s.qte_dispo===0;});
+
+  // Tri
+  items.sort(function(a,b){
+    if(sort==='nom')return a.nom.localeCompare(b.nom,'fr');
+    if(sort==='qte-desc')return b.qte_dispo-a.qte_dispo;
+    if(sort==='qte-asc')return a.qte_dispo-b.qte_dispo;
+    if(sort==='date'){
+      var da=a.dates.length?a.dates[a.dates.length-1]:'';
+      var db=b.dates.length?b.dates[b.dates.length-1]:'';
+      return db.localeCompare(da);
+    }
+    return 0;
+  });
+
+  var el=document.getElementById('pf-list');
+  if(!pfs.length){
+    el.innerHTML='<div class="empty"><div class="empty-i">✨</div><div class="empty-t">Aucun produit fini</div><div style="font-size:13px">Produis des fondants dans l\'Atelier pour les voir apparaître ici !</div></div>';
+    return;
+  }
+  if(!items.length){
+    el.innerHTML='<div class="empty"><div class="empty-i">🔍</div><div class="empty-t">Aucun résultat</div><div style="font-size:13px">Essaie d\'autres filtres.</div></div>';
+    return;
+  }
+
+  el.innerHTML=items.map(function(s){
+    var stockClass=s.qte_dispo===0?'no-stock':s.qte_dispo<5?'low-stock':'';
+    var badgeClass=s.qte_dispo===0?'empty':s.qte_dispo<5?'warn':'';
+    var derniereLot=s.dates.length?s.dates[s.dates.length-1]:'';
+    var txVente=s.qte_prod>0?Math.round((s.qte_vendu/s.qte_prod)*100):0;
+    return'<div class="pf-card '+stockClass+'" id="pfc-'+encodeURIComponent(s.nom)+'">'+
+      '<div class="pf-header" onclick="toggleLots(\''+encodeURIComponent(s.nom)+'\')">'+
+      '<div style="flex:1">'+
+      '<div class="pf-nom">🕯️ '+s.nom+'</div>'+
+      '<div class="pf-meta">'+
+        (s.famille?s.famille+' · ':'')+
+        s.formats.join(', ')+
+        (derniereLot?' · Prod. '+derniereLot:'')+
+      '</div></div>'+
+      '<div style="text-align:right">'+
+      '<div class="pf-badge '+badgeClass+'">'+s.qte_dispo+' u.</div>'+
+      '<div style="font-size:11px;color:#a08060;margin-top:2px">'+s.qte_vendu+' vendus</div>'+
+      '</div></div>'+
+      '<div class="pf-tags">'+
+      (s.famille?'<span class="tag tb">'+s.famille+'</span>':'')+
+      s.formats.map(function(f){return'<span class="tag tp">'+f+'</span>';}).join('')+
+      (s.qte_dispo===0?'<span class="tag tr">Épuisé</span>':s.qte_dispo<5?'<span class="tag to">Stock bas</span>':'<span class="tag tg">En stock</span>')+
+      '</div>'+
+      '<div class="pf-stat-grid">'+
+      '<div class="pf-stat"><div class="pf-stat-l">Produits</div><div class="pf-stat-v">'+s.qte_prod+'</div></div>'+
+      '<div class="pf-stat"><div class="pf-stat-l">Vendus</div><div class="pf-stat-v">'+s.qte_vendu+'</div></div>'+
+      '<div class="pf-stat"><div class="pf-stat-l">Taux vente</div><div class="pf-stat-v">'+txVente+'%</div></div>'+
+      '</div>'+
+      '<div class="pf-lots" id="lots-'+encodeURIComponent(s.nom)+'">'+
+      '<div style="font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Détail des lots</div>'+
+      s.lots.map(function(l){
+        return'<div class="lot-row">'+
+          '<span>📦 '+l.lot+' · '+l.format+' · '+l.poids_unit+'g/u</span>'+
+          '<span style="display:flex;align-items:center;gap:8px">'+
+          '<span style="font-weight:700">'+l.quantite+' produits</span>'+
+          '<span style="font-size:11px;color:#a08060">'+l.date+'</span>'+
+          '</span></div>';
+      }).join('')+
+      '</div>'+
+      '</div>';
+  }).join('');
+}
+
+function toggleLots(nom){
+  var el=document.getElementById('lots-'+nom);
+  if(el)el.className='pf-lots'+(el.className.indexOf('open')>=0?'':' open');
+}
+
+// ── Matières premières (code existant) ──
+function calcPrix(cat,ml,g1,kg,g2,u,prix){
+  prix=parseFloat(prix);if(isNaN(prix)||prix<=0)return null;
+  if(cat==='parfums'){var vml=parseFloat(ml),vg=parseFloat(g1);if(!isNaN(vml)&&vml>0)return{label:'€/L',value:((prix/vml)*1000).toFixed(2)};if(!isNaN(vg)&&vg>0)return{label:'€/kg',value:((prix/vg)*1000).toFixed(2)};}
+  else if(cat==='cire'||cat==='additifs'||cat==='colorants'){var vkg=parseFloat(kg),vg2=parseFloat(g2);if(!isNaN(vkg)&&vkg>0)return{label:'€/kg',value:(prix/vkg).toFixed(2)};if(!isNaN(vg2)&&vg2>0)return{label:'€/kg',value:((prix/vg2)*1000).toFixed(2)};}
+  else{var vu=parseFloat(u);if(!isNaN(vu)&&vu>0)return{label:'€/unité',value:(prix/vu).toFixed(2)};}
+  return null;
+}
+function stockDisp(item){
+  if(item.categorie==='parfums'){var p=[];if(item.stock_ml)p.push(item.stock_ml+' ml');if(item.stock_g)p.push(item.stock_g+' g');return p.join(' / ')||'—';}
+  if(item.categorie==='cire'||item.categorie==='additifs'||item.categorie==='colorants'){var p=[];if(item.stock_kg)p.push(item.stock_kg+' kg');if(item.stock_g)p.push(item.stock_g+' g');return p.join(' / ')||'—';}
+  return item.stock_unite?item.stock_unite+' unités':'—';
+}
+function stockVal(item){
+  if(item.categorie==='parfums')return(parseFloat(item.stock_ml)||0)+(parseFloat(item.stock_g)||0);
+  if(item.categorie==='cire'||item.categorie==='additifs'||item.categorie==='colorants')return(parseFloat(item.stock_kg)||0)*1000+(parseFloat(item.stock_g)||0);
+  return parseFloat(item.stock_unite)||0;
+}
+function isLow(item){if(!item.seuil_alerte)return false;var s=parseFloat(item.seuil_alerte);return!isNaN(s)&&stockVal(item)<=s;}
+
+function sortItems(arr){
+  var s=document.getElementById('sort').value;
+  return arr.slice().sort(function(a,b){
+    if(s==='nom-asc')return a.nom.localeCompare(b.nom,'fr');
+    if(s==='nom-desc')return b.nom.localeCompare(a.nom,'fr');
+    if(s==='prix-asc')return(parseFloat(a.prix_unitaire)||0)-(parseFloat(b.prix_unitaire)||0);
+    if(s==='prix-desc')return(parseFloat(b.prix_unitaire)||0)-(parseFloat(a.prix_unitaire)||0);
+    if(s==='stock-asc')return stockVal(a)-stockVal(b);
+    if(s==='stock-desc')return stockVal(b)-stockVal(a);
+    if(s==='recent')return parseInt(b.id||0)-parseInt(a.id||0);
+    return 0;
+  });
+}
+
+function updAlerts(){
+  var alerts=items.filter(isLow);
+  var bar=document.getElementById('alert-bar');
+  if(!alerts.length){bar.style.display='none';return;}
+  bar.style.display='flex';
+  document.getElementById('alert-items').innerHTML=alerts.map(function(i){return'<span class="bdg bdg-w">'+i.nom+'</span>';}).join(' ');
+}
+
+function updTabs(){
+  var html='<button class="tab'+(activeTab==='tous'?' on':'')+'" onclick="setTab(\'tous\')">Tous ('+items.length+')</button>';
+  Object.keys(CATS).forEach(function(id){
+    var n=items.filter(function(i){return i.categorie===id;}).length;
+    if(n>0)html+='<button class="tab'+(activeTab===id?' on':'')+'" onclick="setTab(\''+id+'\')">'+CATS[id].icon+' '+CATS[id].label+' ('+n+')</button>';
+  });
+  document.getElementById('tabs').innerHTML=html;
+}
+
+function setTab(t){activeTab=t;updTabs();renderList();}
+
+function renderList(){
+  var search=document.getElementById('search').value.toLowerCase();
+  var filtered=sortItems(items.filter(function(item){
+    return(activeTab==='tous'||item.categorie===activeTab)&&item.nom.toLowerCase().indexOf(search)>=0;
+  }));
+  var list=document.getElementById('list');
+  if(!filtered.length){
+    list.innerHTML='<div class="empty"><div class="empty-i">📦</div><div class="empty-t">'+(search?'Aucun résultat':'Inventaire vide')+'</div><div style="font-size:13px">'+(search?'Essaie un autre terme.':'Ajoute tes premières matières !')+'</div></div>';
+    return;
+  }
+  list.innerHTML=filtered.map(function(item){
+    var low=isLow(item);var cat=CATS[item.categorie]||{icon:'📦',label:item.categorie};
+    return'<div class="card'+(low?' low':'')+'">'+
+      '<div class="card-in">'+
+      '<div style="flex:1;min-width:0">'+
+      '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">'+
+      '<span style="font-size:17px">'+cat.icon+'</span>'+
+      '<span class="card-name">'+item.nom+'</span>'+
+      (low?'<span class="bdg bdg-w">⚠ Stock bas</span>':'')+
+      '</div>'+
+      '<div class="card-cat">'+cat.label+(item.fournisseur?' · '+item.fournisseur:'')+'</div>'+
+      '<div class="card-stats">'+
+      '<div><div class="csl">Stock</div><div class="csv">'+stockDisp(item)+'</div></div>'+
+      (item.prix_achat_ttc?'<div><div class="csl">Achat TTC</div><div class="csv">'+item.prix_achat_ttc+' €</div></div>':'')+
+      (item.prix_unitaire?'<div><div class="csl">Prix unitaire</div><div class="csv acc">'+item.prix_unitaire+' '+item.prix_unitaire_label+'</div></div>':'')+
+      '</div>'+
+      (item.notes?'<div class="card-notes">💬 '+item.notes+'</div>':'')+
+      '</div>'+
+      '<div class="card-actions">'+
+      '<button class="btn bg bsm" onclick="openStock(\''+item.id+'\')" title="Ajouter du stock">➕</button>'+
+      '<button class="btn bg bsm" onclick="openEdit(\''+item.id+'\')" title="Modifier">✏️</button>'+
+      '<button class="btn bd bsm" onclick="delItem(\''+item.id+'\')" title="Supprimer">🗑</button>'+
+      '</div></div></div>';
+  }).join('');
+}
+
+// ── Formulaire matières ──
+function updFields(){
+  var cat=document.getElementById('f-cat').value;
+  document.getElementById('f-parfums').style.display=cat==='parfums'?'grid':'none';
+  document.getElementById('f-pond').style.display=(cat==='cire'||cat==='additifs'||cat==='colorants')?'grid':'none';
+  document.getElementById('f-unite').style.display=(cat==='packaging'||cat==='consommables')?'block':'none';
+  updCalc();
+}
+function updCalc(){
+  var cat=document.getElementById('f-cat').value;
+  var p=calcPrix(cat,document.getElementById('f-ml').value,document.getElementById('f-g1').value,document.getElementById('f-kg').value,document.getElementById('f-g2').value,document.getElementById('f-u').value,document.getElementById('f-prix').value);
+  var el=document.getElementById('f-calc');
+  if(p){el.style.display='block';el.innerHTML='💡 Calculé : <strong>'+p.value+' '+p.label+'</strong>';}
+  else el.style.display='none';
+}
+function openForm(){editId=null;document.getElementById('m-prod-t').textContent='✦ Nouveau produit';['f-nom','f-ml','f-g1','f-kg','f-g2','f-u','f-prix','f-seuil','f-four','f-notes'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('f-cat').value='parfums';updFields();document.getElementById('m-prod').classList.remove('hi');}
+function openEdit(id){
+  var item=items.filter(function(i){return i.id===id;})[0];if(!item)return;
+  editId=id;document.getElementById('m-prod-t').textContent='✏️ Modifier';
+  document.getElementById('f-nom').value=item.nom||'';document.getElementById('f-cat').value=item.categorie||'parfums';
+  document.getElementById('f-ml').value=item.stock_ml||'';document.getElementById('f-g1').value=item.stock_g||'';
+  document.getElementById('f-kg').value=item.stock_kg||'';document.getElementById('f-g2').value=item.stock_g||'';
+  document.getElementById('f-u').value=item.stock_unite||'';document.getElementById('f-prix').value=item.prix_achat_ttc||'';
+  document.getElementById('f-seuil').value=item.seuil_alerte||'';document.getElementById('f-four').value=item.fournisseur||'';
+  document.getElementById('f-notes').value=item.notes||'';updFields();document.getElementById('m-prod').classList.remove('hi');
+}
+function closeForm(){document.getElementById('m-prod').classList.add('hi');}
+function saveItem(){
+  var nom=document.getElementById('f-nom').value.trim();if(!nom){toast('Nom obligatoire','e');return;}
+  var cat=document.getElementById('f-cat').value;
+  var sg=cat==='cire'||cat==='additifs'||cat==='colorants'?document.getElementById('f-g2').value:document.getElementById('f-g1').value;
+  var p=calcPrix(cat,document.getElementById('f-ml').value,document.getElementById('f-g1').value,document.getElementById('f-kg').value,document.getElementById('f-g2').value,document.getElementById('f-u').value,document.getElementById('f-prix').value);
+  var ni={id:editId||Date.now().toString(),nom:nom,categorie:cat,stock_ml:document.getElementById('f-ml').value,stock_g:sg,stock_kg:document.getElementById('f-kg').value,stock_unite:document.getElementById('f-u').value,prix_achat_ttc:document.getElementById('f-prix').value,prix_unitaire:p?p.value:'',prix_unitaire_label:p?p.label:'',fournisseur:document.getElementById('f-four').value,seuil_alerte:document.getElementById('f-seuil').value,notes:document.getElementById('f-notes').value};
+  if(editId)items=items.map(function(i){return i.id===editId?ni:i;});else items.push(ni);
+  save();closeForm();render();toast(editId?'Mis à jour ✓':'Ajouté ✓','s');
+}
+function delItem(id){items=items.filter(function(i){return i.id!==id;});save();render();toast('Supprimé','e');}
+
+// ── Ajout stock ──
+function openStock(id){
+  var item=items.filter(function(i){return i.id===id;})[0];if(!item)return;
+  stockItemId=id;document.getElementById('m-stock-t').textContent='➕ Ajouter — '+item.nom;
+  document.getElementById('m-stock-sub').textContent='Stock actuel : '+stockDisp(item);
+  document.getElementById('m-stock-notes').value='';
+  var fields='';
+  if(item.categorie==='parfums')fields='<div class="g2"><div><label class="lbl">Ajouter (ml)</label><input class="inp" type="number" id="as-ml" min="0" placeholder="ex: 30"></div><div><label class="lbl">Ajouter (g)</label><input class="inp" type="number" id="as-g" min="0" placeholder="ex: 28"></div></div>';
+  else if(item.categorie==='cire'||item.categorie==='additifs'||item.categorie==='colorants')fields='<div class="g2"><div><label class="lbl">Ajouter (kg)</label><input class="inp" type="number" id="as-kg" min="0" placeholder="ex: 5"></div><div><label class="lbl">Ajouter (g)</label><input class="inp" type="number" id="as-g" min="0" placeholder="ex: 500"></div></div>';
+  else fields='<div><label class="lbl">Ajouter (unités)</label><input class="inp" type="number" id="as-u" min="0" placeholder="ex: 50"></div>';
+  document.getElementById('m-stock-fields').innerHTML=fields;
+  document.getElementById('m-stock').classList.remove('hi');
+}
+function closeStock(){document.getElementById('m-stock').classList.add('hi');stockItemId=null;}
+function saveStock(){
+  var item=items.filter(function(i){return i.id===stockItemId;})[0];if(!item)return;
+  var cat=item.categorie;
+  if(cat==='parfums'){var aml=parseFloat(document.getElementById('as-ml')?document.getElementById('as-ml').value:0)||0,ag=parseFloat(document.getElementById('as-g')?document.getElementById('as-g').value:0)||0;item.stock_ml=((parseFloat(item.stock_ml)||0)+aml).toFixed(2);item.stock_g=((parseFloat(item.stock_g)||0)+ag).toFixed(2);}
+  else if(cat==='cire'||cat==='additifs'||cat==='colorants'){var akg=parseFloat(document.getElementById('as-kg')?document.getElementById('as-kg').value:0)||0,ag2=parseFloat(document.getElementById('as-g')?document.getElementById('as-g').value:0)||0;item.stock_kg=((parseFloat(item.stock_kg)||0)+akg).toFixed(3);item.stock_g=((parseFloat(item.stock_g)||0)+ag2).toFixed(2);}
+  else{var au=parseFloat(document.getElementById('as-u')?document.getElementById('as-u').value:0)||0;item.stock_unite=((parseFloat(item.stock_unite)||0)+au).toFixed(0);}
+  save();closeStock();render();toast('Stock mis à jour ✓','s');
+}
+
+// ── Backup ──
+function openBackup(){document.getElementById('m-bak').classList.remove('hi');var el=document.getElementById('imp-msg');el.style.display='none';document.getElementById('btn-exp').textContent='⬇️ Télécharger le CSV ('+items.length+' produit'+(items.length!==1?'s':'')+')';;}
+function closeBackup(){document.getElementById('m-bak').classList.add('hi');}
+function escC(val){var s=String(val===null||val===undefined?'':val);if(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)return'"'+s.replace(/"/g,'""')+'"';return s;}
+function exportCSV(){if(!items.length){toast('Rien à exporter','e');return;}var csv='\uFEFF'+[COLS.join(',')].concat(items.map(function(item){return COLS.map(function(c){return escC(item[c]||'');}).join(',');})).join('\n');var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='Elexire-Inventaire-'+new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')+'.csv';a.click();URL.revokeObjectURL(url);toast('CSV téléchargé ✓','s');}
+function parseCSVL(line){var res=[],cur='',inQ=false;for(var i=0;i<line.length;i++){var ch=line[i];if(ch==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}else if(ch===','&&!inQ){res.push(cur);cur='';}else cur+=ch;}res.push(cur);return res;}
+function importCSV(e){var file=e.target.files?e.target.files[0]:null;if(!file)return;var mel=document.getElementById('imp-msg');mel.style.display='block';mel.className='mbox';mel.textContent='Lecture…';var reader=new FileReader();reader.onload=function(ev){try{var text=ev.target.result;if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});if(lines.length<2){mel.className='mbox merr';mel.textContent='❌ Fichier vide.';return;}var hdrs=parseCSVL(lines[0]);var imp=[];for(var i=1;i<lines.length;i++){var vals=parseCSVL(lines[i]);if(vals.length<2)continue;var obj={};hdrs.forEach(function(h,idx){obj[h.trim()]=vals[idx]?vals[idx].trim():'';});if(obj.nom)imp.push(obj);}if(!imp.length){mel.className='mbox merr';mel.textContent='❌ Aucun produit valide.';return;}items=imp;save();render();mel.className='mbox mok';mel.textContent='✅ '+imp.length+' produit(s) restauré(s) !';toast(imp.length+' produits restaurés ✓','s');}catch(err){mel.className='mbox merr';mel.textContent='❌ Erreur : '+err.message;}};reader.readAsText(file,'UTF-8');e.target.value='';}
+
+function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type==='e'?'e':'s');clearTimeout(toastT);toastT=setTimeout(function(){t.className='toast hi';},3000);}
+
+load();
+</script>
+</body>
+</html>
