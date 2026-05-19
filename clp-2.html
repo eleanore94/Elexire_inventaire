@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexire — Étiquettes CLP</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fdf8f3;font-family:Georgia,serif;color:#3a2c1e;min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#c9a97a;border-radius:4px}
+.header{background:linear-gradient(140deg,#2e1f0e,#6d5339);padding:24px 20px 16px}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:700;color:#f5ece0;letter-spacing:.02em}
+.brand-sub{font-size:12px;color:#c9a97a;margin-top:2px}
+.hbtns{display:flex;gap:7px;flex-wrap:wrap}
+.hbtn{background:rgba(255,255,255,.12);color:#c9a97a;border:1px solid rgba(201,169,122,.3);font-size:12px;padding:7px 12px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none;display:inline-block}
+.hbtn:hover{background:rgba(255,255,255,.2)}
+.stats{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.09);border-radius:10px;padding:9px 14px;text-align:center;min-width:70px}
+.stat-n{font-size:18px;font-weight:700;color:#f5ece0}
+.stat-l{font-size:10px;color:#c9a97a}
+.tabs{display:flex;border-bottom:2px solid #e8d9c2;background:#fff;overflow-x:auto}
+.tab{cursor:pointer;padding:12px 16px;font-size:13px;font-weight:700;color:#a08060;border:none;background:transparent;font-family:inherit;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tab.on{color:#6d5339;border-bottom-color:#6d5339}
+.tab:hover:not(.on){color:#6d5339;background:#fdf8f3}
+.page{padding:16px;display:none;padding-bottom:90px}
+.page.on{display:block}
+.btn{cursor:pointer;border:none;border-radius:8px;font-family:inherit;font-weight:700;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.bp{background:#6d5339;color:#fff;padding:9px 18px;font-size:14px}
+.bp:hover{background:#523d2a}
+.bg{background:transparent;color:#8b6f4e;padding:7px 13px;border:1.5px solid #c9a97a;font-size:13px}
+.bg:hover{background:#f5ece0}
+.bd{background:transparent;color:#b03a2e;padding:5px 10px;border:1.5px solid #e8b4b0;font-size:12px}
+.bd:hover{background:#fdf0ef}
+.bsm{padding:5px 10px;font-size:12px}
+.bprint{background:#1a6496;color:#fff;padding:10px 16px;font-size:14px;border-radius:8px;border:none;font-family:inherit;font-weight:700;cursor:pointer;width:100%}
+.bprint:hover{background:#124d73}
+.bgreen{background:#1e7e4a;color:#fff;padding:10px 16px;font-size:14px;border-radius:8px;border:none;font-family:inherit;font-weight:700;cursor:pointer;width:100%}
+.bgreen:hover{background:#155c35}
+.bai{background:linear-gradient(135deg,#6d5339,#c9a97a);color:#fff;padding:10px 16px;font-size:14px;border-radius:8px;border:none;font-family:inherit;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:6px}
+.bai:hover{opacity:.9}
+.bai:disabled{opacity:.5;cursor:not-allowed}
+.card{background:#fff;border-radius:12px;padding:15px 17px;border:1px solid #e8d9c2;margin-bottom:12px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:12px;color:#3a2c1e;display:flex;align-items:center;gap:7px}
+.inp{width:100%;padding:9px 12px;border:1.5px solid #ddd0be;border-radius:8px;font-family:inherit;font-size:14px;background:#fdf8f3;color:#3a2c1e;outline:none;transition:border .15s}
+.inp:focus{border-color:#8b6f4e}
+select.inp{cursor:pointer}
+.lbl{font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.g2{grid-template-columns:1fr}}
+.fgrp{display:flex;flex-direction:column;gap:13px}
+.hint{font-size:12px;color:#a08060;margin-top:4px}
+.sep{border:none;border-top:1px solid #ede0cc;margin:14px 0}
+.hp-grid{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto;padding:2px}
+.hp-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:#f5ece0;border-radius:8px;cursor:pointer}
+.hp-item.sel{background:#d4edda;border:1px solid #a8d9b8}
+.hp-item input{margin-top:2px;flex-shrink:0}
+.hp-code{font-weight:700;font-size:12px;color:#6d5339;min-width:45px}
+.hp-text{font-size:12px;color:#3a2c1e;line-height:1.4}
+.ghs-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.ghs-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px;border-radius:8px;border:2px solid transparent;transition:all .15s}
+.ghs-item.sel{border-color:#6d5339;background:#f5ece0}
+.ghs-item:hover:not(.sel){background:#f0ede6}
+.ghs-svg{width:40px;height:40px}
+.ghs-label{font-size:9px;color:#8b6f4e;font-weight:700;text-align:center;max-width:48px}
+.label-preview-wrap{background:#e8e0d5;border-radius:12px;padding:16px;display:flex;justify-content:center;align-items:center;min-height:160px}
+
+/* FDS */
+.fds-card{background:#fff;border-radius:12px;border:1px solid #e8d9c2;padding:13px 15px;margin-bottom:8px}
+.fds-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fds-nom{font-size:14px;font-weight:700}
+.fds-meta{font-size:12px;color:#a08060;margin-top:2px}
+.fds-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700}
+.tb{background:#d1ecf1;color:#0c5460}
+.tg{background:#d4edda;color:#1a5c35}
+.to{background:#fff3cd;color:#7d5a00}
+.tr{background:#fde8e8;color:#9b1c1c}
+.tp{background:#f3e6fa;color:#6a1b9a}
+
+/* Upload zone */
+.upload-zone{border:2px dashed #c9a97a;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fdf8f3}
+.upload-zone:hover{background:#f5ece0;border-color:#8b6f4e}
+.upload-zone.drag{background:#f5ece0;border-color:#6d5339}
+
+/* IA analyse */
+.ai-result{background:#f0f7f4;border:1px solid #a8d9b8;border-radius:10px;padding:14px;margin-top:10px}
+.ai-result-title{font-size:13px;font-weight:700;color:#1a5c35;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ai-chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;margin:2px;cursor:pointer;border:2px solid transparent}
+.ai-chip.sel{border-color:#1a5c35}
+.ai-chip-h{background:#fde8e8;color:#9b1c1c}
+.ai-chip-p{background:#d1ecf1;color:#0c5460}
+.ai-chip-g{background:#fff3cd;color:#7d5a00}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Bibliothèque CLP */
+.clp-card{background:#fff;border-radius:12px;padding:13px 15px;border:1px solid #e8d9c2;margin-bottom:8px}
+.clp-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+
+.overlay{position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:14px}
+.overlay.hi{display:none}
+.modal{background:#fdf8f3;border-radius:16px;padding:24px;max-width:560px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(30,20,10,.3)}
+.mtitle{font-size:18px;font-weight:700;margin-bottom:16px;color:#3a2c1e}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+
+.info-box{background:#d1ecf1;border:1px solid #bee5eb;border-radius:8px;padding:10px 14px;font-size:13px;color:#0c5460}
+.warn-box{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:13px;color:#7d5a00}
+.empty{text-align:center;padding:40px 20px;color:#b8a090}
+.empty-i{font-size:34px;margin-bottom:8px}
+.empty-t{font-size:15px;font-weight:700;margin-bottom:4px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:28px;font-weight:700;font-size:13px;z-index:200;pointer-events:none;opacity:1;transition:opacity .3s}
+.toast.s{background:#2d6a4f;color:#fff}
+.toast.e{background:#b03a2e;color:#fff}
+.toast.hi{opacity:0}
+@media print{body>*:not(#print-zone){display:none!important}#print-zone{display:flex!important;position:fixed;inset:0;background:#fff;z-index:9999;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px;gap:8px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <div><div class="brand">✦ Elexire</div><div class="brand-sub">Étiquettes CLP & FDS</div></div>
+    <div class="hbtns">
+      <a href="index.html" class="hbtn">📦</a>
+      <a href="atelier.html" class="hbtn">🧪</a>
+      <a href="prix.html" class="hbtn">💰</a>
+      <a href="ventes.html" class="hbtn">🛍️</a>
+      <a href="reglages.html" class="hbtn">⚙️</a>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="sn-clp">0</div><div class="stat-l">Étiquettes</div></div>
+    <div class="stat"><div class="stat-n" id="sn-fds">0</div><div class="stat-l">FDS</div></div>
+    <div class="stat"><div class="stat-n" id="sn-rec">0</div><div class="stat-l">Recettes</div></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="goTab('creer',this)">🏷️ Créer CLP</button>
+  <button class="tab" onclick="goTab('fds',this)">📄 FDS</button>
+  <button class="tab" onclick="goTab('biblio',this)">📚 Bibliothèque</button>
+  <button class="tab" onclick="goTab('regl',this)">⚙️ Entreprise</button>
+</div>
+
+<!-- ── CRÉER CLP ── -->
+<div class="page on" id="page-creer">
+  <div class="card">
+    <div class="card-title">🕯️ Produit</div>
+    <div class="fgrp">
+      <div>
+        <label class="lbl">Lier à une recette</label>
+        <select class="inp" id="c-recette" onchange="onRecChange()">
+          <option value="">— Saisie manuelle —</option>
+        </select>
+      </div>
+      <div class="g2">
+        <div><label class="lbl">Nom du produit *</label><input class="inp" id="c-nom" placeholder="ex: Fondant Brioche" oninput="updPreview()"></div>
+        <div><label class="lbl">Quantité nette</label><input class="inp" id="c-qte" placeholder="ex: 10g" oninput="updPreview()"></div>
+      </div>
+      <div>
+        <label class="lbl">Base(s)</label>
+        <div id="bases-list"></div>
+        <button class="btn bg bsm" onclick="addBase()" style="margin-top:5px">+ Base</button>
+      </div>
+      <div class="g2">
+        <div><label class="lbl">Taux parfum (%)</label><input class="inp" type="number" step="0.1" id="c-taux" placeholder="ex: 10" oninput="updPreview()"></div>
+        <div><label class="lbl">N° de lot</label><input class="inp" id="c-lot" oninput="updPreview()"></div>
+      </div>
+      <!-- Lier FDS -->
+      <div>
+        <label class="lbl">FDS liée (pour référence)</label>
+        <select class="inp" id="c-fds" onchange="onFdsChange()">
+          <option value="">— Aucune —</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📐 Format</div>
+    <div class="fgrp">
+      <div class="g2">
+        <div><label class="lbl">Type</label>
+          <select class="inp" id="c-format" onchange="updFmt();updPreview()">
+            <option value="rect">Rectangle</option>
+            <option value="carre">Carré</option>
+            <option value="rond">Rond</option>
+          </select>
+        </div>
+        <div><label class="lbl">Impression</label>
+          <select class="inp" id="c-imp" onchange="updPreview()">
+            <option value="jet">Jet d'encre (couleur)</option>
+            <option value="th">Thermique (N&B)</option>
+          </select>
+        </div>
+      </div>
+      <div class="g2" id="fmt-dims">
+        <div><label class="lbl">Largeur (mm)</label><input class="inp" type="number" id="c-larg" value="80" oninput="updPreview()"></div>
+        <div><label class="lbl">Hauteur (mm)</label><input class="inp" type="number" id="c-haut" value="50" oninput="updPreview()"></div>
+      </div>
+      <div id="fmt-diam" style="display:none">
+        <label class="lbl">Diamètre (mm)</label>
+        <input class="inp" type="number" id="c-diam" value="60" oninput="updPreview()">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚠️ Pictogrammes GHS</div>
+    <div class="info-box" style="margin-bottom:10px;font-size:12px">Sélectionne selon la FDS de ton parfum. Clique pour activer/désactiver.</div>
+    <div class="ghs-grid" id="ghs-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Mentions H & P</div>
+    <div class="fgrp">
+      <div><label class="lbl">Mentions de danger (H)</label><div class="hp-grid" id="h-list"></div></div>
+      <div><label class="lbl">Conseils de prudence (P)</label><div class="hp-grid" id="p-list"></div></div>
+      <div>
+        <label class="lbl">Mentions personnalisées</label>
+        <input class="inp" id="c-hp-custom" placeholder="ex: H317 Peut provoquer une allergie cutanée." oninput="updPreview()">
+        <div class="hint">Séparées par des virgules</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔢 UFI</div>
+    <div class="fgrp">
+      <div class="info-box" style="font-size:12px">Obligatoire si le produit contient des substances classées dangereuses (H302, H314, H315, H317…)</div>
+      <div class="g2">
+        <div><label class="lbl">Code UFI</label><input class="inp" id="c-ufi" placeholder="UFI: XXXX-XXXX-XXXX-XXXX" oninput="updPreview()"></div>
+        <div><label class="lbl">Statut</label>
+          <select class="inp" id="c-ufi-req" onchange="updPreview()">
+            <option value="oui">Oui — à afficher</option>
+            <option value="non">Non requis</option>
+            <option value="encours">En cours</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">👁️ Aperçu</div>
+    <div class="label-preview-wrap"><div id="label-preview"></div></div>
+    <div class="g2" style="margin-top:12px;gap:8px">
+      <button class="bgreen" onclick="saveClp()">💾 Sauvegarder</button>
+      <button class="bprint" onclick="openPrint()">🖨️ Imprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── FDS ── -->
+<div class="page" id="page-fds">
+  <div style="font-size:17px;font-weight:700;margin-bottom:14px">📄 Fiches de données de sécurité</div>
+
+  <!-- Upload -->
+  <div class="card">
+    <div class="card-title">➕ Ajouter une FDS</div>
+    <div class="fgrp">
+      <div><label class="lbl">Nom du produit / parfum</label><input class="inp" id="fds-nom" placeholder="ex: Parfum Brioche au beurre — Le Petit Grassois"></div>
+      <div><label class="lbl">Catégorie</label>
+        <select class="inp" id="fds-cat">
+          <option value="parfum">🌸 Parfum</option>
+          <option value="cire">🕯️ Cire</option>
+          <option value="additif">⚗️ Additif</option>
+          <option value="colorant">🎨 Colorant/Mica</option>
+          <option value="autre">📦 Autre</option>
+        </select>
+      </div>
+      <div><label class="lbl">Fournisseur</label><input class="inp" id="fds-four" placeholder="ex: Le Petit Grassois"></div>
+
+      <!-- Zone upload fichier -->
+      <div>
+        <label class="lbl">Fichier FDS (PDF ou Word)</label>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('fds-file').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="onDrop(event)">
+          <div style="font-size:28px;margin-bottom:6px">📄</div>
+          <div style="font-weight:700;font-size:14px;color:#6d5339">Glisse ton fichier ici</div>
+          <div style="font-size:12px;color:#a08060;margin-top:4px">ou clique pour parcourir · PDF ou Word</div>
+          <div id="fds-file-name" style="font-size:12px;color:#6d5339;font-weight:700;margin-top:8px;display:none"></div>
+        </div>
+        <input type="file" id="fds-file" accept=".pdf,.doc,.docx" style="display:none" onchange="onFileSelect(event)">
+      </div>
+
+      <div><label class="lbl">Notes / référence</label><input class="inp" id="fds-notes" placeholder="ex: Réf commande mai 2026, N° lot..."></div>
+
+      <!-- Bouton analyse IA -->
+      <button class="bai" id="btn-ai" onclick="analyseIA()" disabled>
+        ✨ Analyser avec l'IA (extraction H&P automatique)
+      </button>
+      <div class="hint" style="text-align:center">Utilise quelques crédits API — extrait les mentions H&P et pictogrammes GHS automatiquement</div>
+
+      <!-- Résultat IA -->
+      <div id="ai-result" style="display:none"></div>
+
+      <button class="bgreen" id="btn-save-fds" onclick="saveFds()">💾 Sauvegarder la FDS</button>
+    </div>
+  </div>
+
+  <!-- Liste FDS -->
+  <div style="font-size:15px;font-weight:700;margin-bottom:10px">Mes FDS sauvegardées</div>
+  <div id="list-fds"></div>
+</div>
+
+<!-- ── BIBLIOTHÈQUE CLP ── -->
+<div class="page" id="page-biblio">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="font-size:17px;font-weight:700">Mes étiquettes CLP</div>
+  </div>
+  <div id="list-clp"></div>
+</div>
+
+<!-- ── ENTREPRISE ── -->
+<div class="page" id="page-regl">
+  <div class="card">
+    <div class="card-title">🏢 Informations responsable</div>
+    <div class="fgrp">
+      <div><label class="lbl">Nom / Raison sociale *</label><input class="inp" id="r-nom" placeholder="ex: Elexire — Eleonore Grassin"></div>
+      <div><label class="lbl">Adresse *</label><input class="inp" id="r-adresse" placeholder="ex: 8 rue Arsène Bourgeois, 45000 Orléans"></div>
+      <div class="g2">
+        <div><label class="lbl">Téléphone</label><input class="inp" id="r-tel" placeholder="+33 6 XX XX XX XX"></div>
+        <div><label class="lbl">Email</label><input class="inp" id="r-email" placeholder="contact@elexire.fr"></div>
+      </div>
+      <div><label class="lbl">Site web</label><input class="inp" id="r-web" placeholder="www.elexire.fr"></div>
+      <button class="bgreen" onclick="saveResp()">💾 Sauvegarder</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🔑 Clé API Anthropic</div>
+    <div class="fgrp">
+      <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:13px;color:#7d5a00">⚠️ Ta clé est stockée uniquement sur cet appareil (localStorage). Elle n'est jamais envoyée sur GitHub ni partagée avec personne.</div>
+      <div><label class="lbl">Clé API (sk-ant-...)</label>
+        <div style="display:flex;gap:8px">
+          <input class="inp" type="password" id="r-api-key" placeholder="sk-ant-api03-..." style="flex:1;font-family:monospace">
+          <button class="btn bg bsm" onclick="toggleApiKey()" id="btn-show-key">👁️</button>
+        </div>
+        <div class="hint">Obtenue sur console.anthropic.com → API Keys</div>
+      </div>
+      <div id="api-status" style="display:none"></div>
+      <button class="bgreen" onclick="saveApiKey()">💾 Sauvegarder la clé API</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">ℹ️ Rappel réglementaire CLP</div>
+    <div style="font-size:13px;color:#6d5339;line-height:1.7;display:flex;flex-direction:column;gap:6px">
+      <p>✅ <strong>Obligatoire :</strong> nom produit, responsable + adresse, quantité nette, pictogrammes GHS, mentions H&P, UFI si applicable.</p>
+      <p>✅ <strong>Pictogrammes :</strong> min 1cm² pour étiquettes entre 3 et 40cm².</p>
+      <p>✅ <strong>Police min :</strong> 6pt pour étiquettes &lt;40cm².</p>
+      <p>✅ <strong>UFI obligatoire</strong> si H302, H314, H315, H317, H319…</p>
+      <p>⚠️ <strong>Cire de soja pure :</strong> généralement non classifiée — vérifier quand même la FDS fournisseur.</p>
+      <p>⚠️ <strong>Parfums :</strong> toujours vérifier la FDS pour les mentions exactes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPRESSION -->
+<div class="overlay hi" id="m-print" onclick="if(event.target===this)closePrint()">
+  <div class="modal">
+    <div class="mtitle">🖨️ Impression</div>
+    <div style="margin-bottom:12px">
+      <label class="lbl">Nombre d'étiquettes</label>
+      <input class="inp" type="number" id="print-n" value="1" min="1" max="50" style="width:100px" oninput="updPrintPrev()">
+    </div>
+    <div id="print-preview" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;background:#e8e0d5;padding:12px;border-radius:10px;min-height:80px"></div>
+    <div class="mfoot">
+      <button class="btn bg bsm" onclick="closePrint()">Annuler</button>
+      <button class="btn bp" onclick="doPrint()">🖨️ Imprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FDS DÉTAIL -->
+<div class="overlay hi" id="m-fds" onclick="if(event.target===this)document.getElementById('m-fds').classList.add('hi')">
+  <div class="modal">
+    <div class="mtitle" id="m-fds-title">FDS</div>
+    <div id="m-fds-content"></div>
+    <div class="mfoot"><button class="btn bg bsm" onclick="document.getElementById('m-fds').classList.add('hi')">Fermer</button></div>
+  </div>
+</div>
+
+<div id="print-zone" style="display:none"></div>
+<div class="toast hi" id="toast"></div>
+
+<script>
+var CLP_KEY='elexire-clp-v1';
+var API_KEY_KEY='elexire-api-key-v1';
+var FDS_KEY='elexire-fds-v1';
+var RESP_KEY='elexire-clp-resp-v1';
+var REC_KEY='elexire-recettes-v1';
+var INV_KEY='elexire-inventaire-v1';
+
+var clps=[],fdsList=[],recs=[],inv=[],resp={};
+var basesCount=0,selectedGHS=[],selectedH=[],selectedP=[];
+var currentFile=null,currentFileB64=null,currentFileType=null;
+var aiExtracted=null;
+var toastT=null;
+
+var GHS=[
+  {id:'GHS01',label:'Explosif',color:'#e74c3c'},
+  {id:'GHS02',label:'Inflammable',color:'#e67e22'},
+  {id:'GHS03',label:'Comburant',color:'#e67e22'},
+  {id:'GHS04',label:'Gaz comprimé',color:'#3498db'},
+  {id:'GHS05',label:'Corrosif',color:'#c0392b'},
+  {id:'GHS06',label:'Toxique',color:'#c0392b'},
+  {id:'GHS07',label:'Nocif',color:'#f39c12'},
+  {id:'GHS08',label:'Santé',color:'#c0392b'},
+  {id:'GHS09',label:'Env. aq.',color:'#2980b9'},
+];
+
+var H_LIST=[
+  {code:'H226',text:'Liquide et vapeurs inflammables.'},
+  {code:'H227',text:'Liquide combustible.'},
+  {code:'H290',text:'Peut être corrosif pour les métaux.'},
+  {code:'H302',text:'Nocif en cas d\'ingestion.'},
+  {code:'H304',text:'Peut être mortel en cas d\'ingestion et de pénétration dans les voies respiratoires.'},
+  {code:'H312',text:'Nocif par contact cutané.'},
+  {code:'H315',text:'Provoque une irritation cutanée.'},
+  {code:'H317',text:'Peut provoquer une allergie cutanée.'},
+  {code:'H319',text:'Provoque une sévère irritation des yeux.'},
+  {code:'H332',text:'Nocif par inhalation.'},
+  {code:'H335',text:'Peut irriter les voies respiratoires.'},
+  {code:'H336',text:'Peut provoquer somnolence ou vertiges.'},
+  {code:'H361',text:'Susceptible de nuire à la fertilité ou au fœtus.'},
+  {code:'H400',text:'Très toxique pour les organismes aquatiques.'},
+  {code:'H410',text:'Très toxique pour les organismes aquatiques, entraîne des effets néfastes à long terme.'},
+  {code:'H411',text:'Toxique pour les organismes aquatiques, entraîne des effets néfastes à long terme.'},
+  {code:'H412',text:'Nocif pour les organismes aquatiques, entraîne des effets néfastes à long terme.'},
+];
+
+var P_LIST=[
+  {code:'P101',text:'En cas de consultation d\'un médecin, garder à disposition le récipient ou l\'étiquette.'},
+  {code:'P102',text:'Tenir hors de portée des enfants.'},
+  {code:'P103',text:'Lire l\'étiquette avant utilisation.'},
+  {code:'P210',text:'Tenir à l\'écart de la chaleur, des surfaces chaudes, des étincelles et des flammes nues.'},
+  {code:'P261',text:'Éviter de respirer les vapeurs/aérosols.'},
+  {code:'P264',text:'Se laver soigneusement les mains après manipulation.'},
+  {code:'P271',text:'Utiliser seulement en plein air ou dans un endroit bien ventilé.'},
+  {code:'P272',text:'Les vêtements de travail contaminés ne devraient pas sortir du lieu de travail.'},
+  {code:'P273',text:'Éviter le rejet dans l\'environnement.'},
+  {code:'P280',text:'Porter des gants de protection/vêtements de protection.'},
+  {code:'P301+P312',text:'EN CAS D\'INGESTION : appeler un CENTRE ANTIPOISON en cas de malaise.'},
+  {code:'P302+P352',text:'EN CAS DE CONTACT AVEC LA PEAU : laver abondamment à l\'eau et au savon.'},
+  {code:'P305+P351+P338',text:'EN CAS DE CONTACT AVEC LES YEUX : rincer avec précaution à l\'eau pendant plusieurs minutes.'},
+  {code:'P333+P313',text:'En cas d\'irritation ou d\'éruption cutanée : consulter un médecin.'},
+  {code:'P362+P364',text:'Enlever les vêtements contaminés et les laver avant réutilisation.'},
+  {code:'P391',text:'Recueillir le produit répandu.'},
+  {code:'P501',text:'Éliminer le contenu/récipient conformément à la réglementation locale.'},
+];
+
+var BASES=['Cire de soja','Stéarine végétale','Bicarbonate de soude','Cire d\'abeille','Cire de coco','Cire végétale mix','Sel de mer','Argile','Autre'];
+
+function init(){
+  try{clps=JSON.parse(localStorage.getItem(CLP_KEY)||'[]');}catch(e){clps=[];}
+  try{fdsList=JSON.parse(localStorage.getItem(FDS_KEY)||'[]');}catch(e){fdsList=[];}
+  try{recs=JSON.parse(localStorage.getItem(REC_KEY)||'[]');}catch(e){recs=[];}
+  try{inv=JSON.parse(localStorage.getItem(INV_KEY)||'[]');}catch(e){inv=[];}
+  try{resp=JSON.parse(localStorage.getItem(RESP_KEY)||'{}');}catch(e){resp={};}
+  fillRecs();fillFdsSel();fillResp();loadApiKey();buildGHS();buildHP();
+  addBase();updPreview();updStats();
+  var d=new Date();
+  document.getElementById('c-lot').value='LOT-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+}
+
+function saveClps(){localStorage.setItem(CLP_KEY,JSON.stringify(clps));}
+function loadApiKey(){
+  var k=localStorage.getItem(API_KEY_KEY)||"";
+  if(k){document.getElementById("r-api-key").value=k;showApiStatus(true);}
+}
+function saveApiKey(){
+  var k=document.getElementById("r-api-key").value.trim();
+  if(!k||!k.startsWith("sk-ant-")){toast("Clé invalide — doit commencer par sk-ant-","e");return;}
+  localStorage.setItem(API_KEY_KEY,k);
+  showApiStatus(true);
+  toast("Clé API sauvegardée ✓","s");
+}
+function getApiKey(){return localStorage.getItem(API_KEY_KEY)||"";}
+function showApiStatus(ok){
+  var el=document.getElementById('api-status');
+  if(ok){el.style.display='block';el.innerHTML='<div style="background:#d4edda;border:1px solid #a8d9b8;border-radius:8px;padding:9px 13px;font-size:13px;color:#1a5c35;font-weight:700">✅ Clé API configurée — analyse IA disponible</div>';}
+  else{el.style.display='block';el.innerHTML='<div style="background:#fde8e8;border:1px solid #e8b4b0;border-radius:8px;padding:9px 13px;font-size:13px;color:#9b1c1c;font-weight:700">❌ Aucune clé configurée</div>';}
+}
+function toggleApiKey(){
+  var inp=document.getElementById("r-api-key");
+  var btn=document.getElementById("btn-show-key");
+  if(inp.type==="password"){inp.type="text";btn.textContent="🙈";}
+  else{inp.type="password";btn.textContent="👁️";}
+}
+function saveFdsList(){localStorage.setItem(FDS_KEY,JSON.stringify(fdsList));}
+
+function updStats(){
+  document.getElementById('sn-clp').textContent=clps.length;
+  document.getElementById('sn-fds').textContent=fdsList.length;
+  document.getElementById('sn-rec').textContent=recs.length;
+}
+
+function goTab(n,btn){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');document.getElementById('page-'+n).classList.add('on');
+  if(n==='biblio')rendBiblio();
+  if(n==='fds')rendFds();
+}
+
+// ── Sélecteurs ──
+function fillRecs(){
+  var s=document.getElementById('c-recette');
+  s.innerHTML='<option value="">— Saisie manuelle —</option>'+
+    recs.map(function(r){return'<option value="'+r.id+'">'+r.nom+'</option>';}).join('');
+}
+
+function fillFdsSel(){
+  var s=document.getElementById('c-fds');
+  s.innerHTML='<option value="">— Aucune —</option>'+
+    fdsList.map(function(f){return'<option value="'+f.id+'">'+f.nom+'</option>';}).join('');
+}
+
+function fillResp(){
+  if(resp.nom)document.getElementById('r-nom').value=resp.nom;
+  if(resp.adresse)document.getElementById('r-adresse').value=resp.adresse;
+  if(resp.tel)document.getElementById('r-tel').value=resp.tel;
+  if(resp.email)document.getElementById('r-email').value=resp.email;
+  if(resp.web)document.getElementById('r-web').value=resp.web;
+}
+
+function saveResp(){
+  resp={nom:document.getElementById('r-nom').value,adresse:document.getElementById('r-adresse').value,tel:document.getElementById('r-tel').value,email:document.getElementById('r-email').value,web:document.getElementById('r-web').value};
+  localStorage.setItem(RESP_KEY,JSON.stringify(resp));
+  toast('Informations sauvegardées ✓','s');updPreview();
+}
+
+function onRecChange(){
+  var rid=document.getElementById('c-recette').value;
+  if(!rid){updPreview();return;}
+  var r=recs.filter(function(x){return x.id===rid;})[0];
+  if(r)document.getElementById('c-nom').value=r.nom;
+  updPreview();
+}
+
+function onFdsChange(){
+  var fid=document.getElementById('c-fds').value;
+  if(!fid)return;
+  var f=fdsList.filter(function(x){return x.id===fid;})[0];
+  if(!f||!f.extracted)return;
+  // Appliquer les mentions extraites par IA si disponibles
+  if(confirm('Appliquer les mentions H&P extraites de cette FDS ?')){
+    (f.extracted.h||[]).forEach(function(code){if(selectedH.indexOf(code)<0)toggleH(code);});
+    (f.extracted.p||[]).forEach(function(code){if(selectedP.indexOf(code)<0)toggleP(code);});
+    (f.extracted.ghs||[]).forEach(function(id){if(selectedGHS.indexOf(id)<0)toggleGHS(id);});
+    updPreview();
+    toast('Mentions H&P appliquées depuis la FDS ✓','s');
+  }
+}
+
+// ── Bases ──
+function addBase(val){
+  basesCount++;var idx=basesCount;
+  var opts=BASES.map(function(b){return'<option value="'+b+'"'+(val===b?' selected':'')+'>'+b+'</option>';}).join('');
+  var d=document.createElement('div');d.id='br-'+idx;
+  d.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:6px';
+  d.innerHTML='<select class="inp" id="bs-'+idx+'" onchange="updPreview()" style="flex:1">'+opts+'</select>'+
+    '<button class="btn bd bsm" onclick="remBase('+idx+')">✕</button>';
+  document.getElementById('bases-list').appendChild(d);updPreview();
+}
+function remBase(idx){var el=document.getElementById('br-'+idx);if(el)el.remove();updPreview();}
+function getBases(){var r=[];document.querySelectorAll('[id^="bs-"]').forEach(function(s){r.push(s.value);});return r;}
+
+// ── GHS ──
+function buildGHS(){
+  document.getElementById('ghs-grid').innerHTML=GHS.map(function(g){
+    return'<div class="ghs-item" id="gi-'+g.id+'" onclick="toggleGHS(\''+g.id+'\')">'+
+      mkGhsSvg(g.id,g.color,40)+
+      '<div class="ghs-label">'+g.label+'</div></div>';
+  }).join('');
+}
+function toggleGHS(id){
+  var i=selectedGHS.indexOf(id);if(i>=0)selectedGHS.splice(i,1);else selectedGHS.push(id);
+  var el=document.getElementById('gi-'+id);if(el)el.className='ghs-item'+(selectedGHS.indexOf(id)>=0?' sel':'');
+  updPreview();
+}
+function mkGhsSvg(id,color,size){
+  var n=id.replace('GHS','');
+  return'<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100">'+
+    '<polygon points="50,5 95,95 5,95" fill="white" stroke="'+color+'" stroke-width="6"/>'+
+    '<text x="50" y="80" text-anchor="middle" font-size="42" font-weight="bold" fill="'+color+'">'+n+'</text>'+
+    '</svg>';
+}
+
+// ── H&P ──
+function buildHP(){
+  document.getElementById('h-list').innerHTML=H_LIST.map(function(h){
+    return'<div class="hp-item" id="hi-'+h.code+'" onclick="toggleH(\''+h.code+'\')">'+
+      '<input type="checkbox" id="hc-'+h.code+'" onclick="event.stopPropagation()">'+
+      '<div><span class="hp-code">'+h.code+'</span><span class="hp-text"> '+h.text+'</span></div></div>';
+  }).join('');
+  document.getElementById('p-list').innerHTML=P_LIST.map(function(p){
+    return'<div class="hp-item" id="pi-'+p.code+'" onclick="toggleP(\''+p.code+'\')">'+
+      '<input type="checkbox" id="pc-'+p.code+'" onclick="event.stopPropagation()">'+
+      '<div><span class="hp-code">'+p.code+'</span><span class="hp-text"> '+p.text+'</span></div></div>';
+  }).join('');
+}
+function toggleH(code){
+  var i=selectedH.indexOf(code);if(i>=0)selectedH.splice(i,1);else selectedH.push(code);
+  var on=selectedH.indexOf(code)>=0;
+  var el=document.getElementById('hi-'+code);var cb=document.getElementById('hc-'+code);
+  if(el)el.className='hp-item'+(on?' sel':'');if(cb)cb.checked=on;updPreview();
+}
+function toggleP(code){
+  var i=selectedP.indexOf(code);if(i>=0)selectedP.splice(i,1);else selectedP.push(code);
+  var on=selectedP.indexOf(code)>=0;
+  var el=document.getElementById('pi-'+code);var cb=document.getElementById('pc-'+code);
+  if(el)el.className='hp-item'+(on?' sel':'');if(cb)cb.checked=on;updPreview();
+}
+
+// ── Format ──
+function updFmt(){
+  var f=document.getElementById('c-format').value;
+  document.getElementById('fmt-dims').style.display=f!=='rond'?'grid':'none';
+  document.getElementById('fmt-diam').style.display=f==='rond'?'block':'none';
+}
+
+// ── Génération étiquette ──
+function buildLabel(scale){
+  scale=scale||1;
+  var nom=document.getElementById('c-nom').value||'Nom du produit';
+  var qte=document.getElementById('c-qte').value||'';
+  var lot=document.getElementById('c-lot').value||'';
+  var taux=document.getElementById('c-taux').value||'';
+  var ufi=document.getElementById('c-ufi').value||'';
+  var ufiReq=document.getElementById('c-ufi-req').value;
+  var hpC=document.getElementById('c-hp-custom').value||'';
+  var th=document.getElementById('c-imp').value==='th';
+  var fmt=document.getElementById('c-format').value;
+  var larg,haut,rad='0px';
+  if(fmt==='rond'){var dm=parseFloat(document.getElementById('c-diam').value)||60;larg=dm;haut=dm;rad=(dm/2)+'mm';}
+  else{larg=parseFloat(document.getElementById('c-larg').value)||80;haut=parseFloat(document.getElementById('c-haut').value)||50;if(fmt==='carre'){larg=Math.min(larg,haut);haut=larg;}}
+  var bases=getBases();
+  var rn=resp.nom||'[Responsable]';
+  var ra=resp.adresse||'[Adresse]';
+  var hTexts=H_LIST.filter(function(h){return selectedH.indexOf(h.code)>=0;}).map(function(h){return h.code+' '+h.text;});
+  var pTexts=P_LIST.filter(function(p){return selectedP.indexOf(p.code)>=0;}).map(function(p){return p.code+' '+p.text;});
+  if(hpC)hTexts=hTexts.concat(hpC.split(',').map(function(s){return s.trim();}));
+  var ghsMap=GHS.reduce(function(m,g){m[g.id]=g;return m;},{});
+  var px=function(mm){return Math.round(mm*scale*3.78);};
+  var fs=function(base){return Math.max(5,Math.round(base*scale));};
+  var ghsHtml=selectedGHS.map(function(id){var g=ghsMap[id];return g?mkGhsSvg(id,th?'#000':g.color,px(Math.min(larg,haut)*0.18)):'';}).join('');
+
+  return'<div style="width:'+px(larg)+'px;height:'+px(haut)+'px;border:'+(th?'2px solid #000':'1px solid #aaa')+';border-radius:'+rad+';background:#fff;padding:'+px(3)+'px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;font-family:Arial,sans-serif">'+
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid '+(th?'#000':'#ddd')+';padding-bottom:'+px(2)+'px">'+
+      '<div style="font-size:'+fs(larg*0.13)+'px;font-weight:bold;color:'+(th?'#000':'#2c1810')+';line-height:1.2;flex:1">'+nom+'</div>'+
+      (qte?'<div style="font-size:'+fs(larg*0.09)+'px;font-weight:bold;color:'+(th?'#000':'#555')+';white-space:nowrap;margin-left:4px">'+qte+'</div>':'')+
+    '</div>'+
+    (bases.length?'<div style="font-size:'+fs(larg*0.07)+'px;color:'+(th?'#000':'#444')+';margin:'+(px(1))+'px 0">'+bases.join(', ')+(taux?' + '+taux+'% parfum':'')+' </div>':'')+
+    '<div style="display:flex;gap:'+px(2)+'px;align-items:flex-start;flex:1;overflow:hidden;margin:'+(px(1))+'px 0">'+
+      (ghsHtml?'<div style="display:flex;flex-wrap:wrap;gap:2px;flex-shrink:0">'+ghsHtml+'</div>':'')+
+      ((hTexts.length||pTexts.length)?'<div style="font-size:'+fs(larg*0.065)+'px;line-height:1.3;overflow:hidden;flex:1">'+
+        (hTexts.length?'<span style="color:'+(th?'#000':'#c0392b')+';font-weight:bold">'+hTexts.join(' ')+'</span>':'')+
+        (pTexts.length?'<span style="color:'+(th?'#000':'#2980b9')+'"> '+pTexts.join(' ')+'</span>':'')+
+      '</div>':'')+
+    '</div>'+
+    (ufiReq==='oui'&&ufi?'<div style="font-size:'+fs(larg*0.07)+'px;font-weight:bold;color:'+(th?'#000':'#6d5339')+';border-top:1px solid '+(th?'#000':'#ddd')+';padding-top:'+px(1)+'px">'+ufi+'</div>':'')+
+    (ufiReq==='encours'?'<div style="font-size:'+fs(larg*0.06)+'px;color:#999;font-style:italic">UFI en cours</div>':'')+
+    '<div style="border-top:1px solid '+(th?'#000':'#ddd')+';padding-top:'+px(1)+'px;margin-top:'+px(1)+'px">'+
+      '<div style="font-size:'+fs(larg*0.065)+'px;color:'+(th?'#000':'#333')+';line-height:1.3"><strong>'+rn+'</strong> — '+ra+'</div>'+
+      (lot?'<div style="font-size:'+fs(larg*0.055)+'px;color:#888">N° lot : '+lot+'</div>':'')+
+    '</div>'+
+  '</div>';
+}
+
+function updPreview(){document.getElementById('label-preview').innerHTML=buildLabel(1);}
+
+// ── Sauvegarder CLP ──
+function saveClp(){
+  var nom=document.getElementById('c-nom').value.trim();
+  if(!nom){toast('Nom obligatoire','e');return;}
+  var c={
+    id:Date.now().toString(),nom:nom,
+    recette_id:document.getElementById('c-recette').value,
+    fds_id:document.getElementById('c-fds').value,
+    qte:document.getElementById('c-qte').value,
+    bases:getBases(),taux:document.getElementById('c-taux').value,
+    lot:document.getElementById('c-lot').value,
+    ufi:document.getElementById('c-ufi').value,ufi_req:document.getElementById('c-ufi-req').value,
+    ghs:selectedGHS.slice(),h:selectedH.slice(),p:selectedP.slice(),
+    hp_custom:document.getElementById('c-hp-custom').value,
+    format:document.getElementById('c-format').value,
+    larg:document.getElementById('c-larg').value,haut:document.getElementById('c-haut').value,
+    diam:document.getElementById('c-diam').value,imp:document.getElementById('c-imp').value,
+    date:new Date().toLocaleDateString('fr-FR'),
+    html:buildLabel(1),
+  };
+  var ex=clps.findIndex(function(x){return x.recette_id&&x.recette_id===c.recette_id&&c.recette_id;});
+  if(ex>=0){if(confirm('Étiquette existante pour cette recette. Remplacer ?'))clps[ex]=c;else return;}
+  else clps.unshift(c);
+  saveClps();updStats();toast('Étiquette sauvegardée ✓','s');
+}
+
+// ── Impression ──
+function openPrint(){document.getElementById('m-print').classList.remove('hi');updPrintPrev();}
+function closePrint(){document.getElementById('m-print').classList.add('hi');}
+function updPrintPrev(){
+  var n=Math.min(parseInt(document.getElementById('print-n').value)||1,12);
+  var h='';for(var i=0;i<n;i++)h+='<div style="display:inline-block;margin:3px">'+buildLabel(0.65)+'</div>';
+  document.getElementById('print-preview').innerHTML=h;
+}
+function doPrint(){
+  var n=parseInt(document.getElementById('print-n').value)||1;
+  var h='';for(var i=0;i<n;i++)h+='<div style="display:inline-block;margin:4px">'+buildLabel(1)+'</div>';
+  var pz=document.getElementById('print-zone');
+  pz.innerHTML=h;pz.style.display='flex';pz.style.flexWrap='wrap';pz.style.gap='8px';pz.style.padding='16px';
+  window.print();setTimeout(function(){pz.style.display='none';pz.innerHTML='';},1000);
+  closePrint();
+}
+
+// ── FDS ──
+function onDrop(e){
+  e.preventDefault();document.getElementById('upload-zone').classList.remove('drag');
+  var f=e.dataTransfer.files[0];if(f)processFile(f);
+}
+function onFileSelect(e){var f=e.target.files[0];if(f)processFile(f);}
+
+function processFile(f){
+  var allowed=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  var ext=f.name.split('.').pop().toLowerCase();
+  if(!['pdf','doc','docx'].includes(ext)){toast('Format non supporté (PDF ou Word uniquement)','e');return;}
+  currentFile=f;currentFileType=ext==='pdf'?'pdf':'docx';
+  document.getElementById('fds-file-name').textContent='📎 '+f.name;
+  document.getElementById('fds-file-name').style.display='block';
+  // Lire en base64
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    currentFileB64=ev.target.result.split(',')[1];
+    document.getElementById('btn-ai').disabled=false;
+    toast('Fichier chargé — prêt à analyser','s');
+  };
+  reader.readAsDataURL(f);
+  // Auto-remplir le nom si vide
+  if(!document.getElementById('fds-nom').value){
+    document.getElementById('fds-nom').value=f.name.replace(/\.(pdf|doc|docx)$/i,'');
+  }
+}
+
+// ── Analyse IA ──
+async function analyseIA(){
+  if(!currentFileB64){toast('Charge d\'abord un fichier','e');return;}
+  var apiKey=getApiKey();
+  if(!apiKey){
+    toast('Configure ta clé API dans l\'onglet ⚙️ Entreprise','e');
+    return;
+  }
+  var btn=document.getElementById('btn-ai');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> Analyse en cours…';
+  document.getElementById('ai-result').style.display='none';
+  try{
+    var mediaType=currentFileType==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    var messages=[{
+      role:'user',
+      content:[
+        {type:'document',source:{type:'base64',media_type:mediaType,data:currentFileB64}},
+        {type:'text',text:'Analyse cette Fiche de Données de Sécurité (FDS) et extrait les informations suivantes au format JSON uniquement, sans aucun texte avant ou après :\n{\n  "h": ["code H sans le texte, ex: H315", "H317"],\n  "p": ["code P sans le texte, ex: P102", "P280"],\n  "ghs": ["GHS01", "GHS07"],\n  "ufi_requis": true/false,\n  "resume": "résumé en 1 phrase des principaux dangers"\n}\nSeuls les codes présents dans la FDS. Pour les pictogrammes GHS, utilise les codes GHS01 à GHS09.'}
+      ]
+    }];
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:messages})
+    });
+    var data=await res.json();
+    if(data.error){
+      var msg=data.error.message||'Erreur inconnue';
+      if(res.status===401)msg='Clé API invalide ou expirée. Vérifie ta clé dans ⚙️ Entreprise.';
+      else if(res.status===429)msg='Limite de requêtes atteinte. Réessaie dans quelques secondes.';
+      else if(res.status===402)msg='Crédit insuffisant. Recharge ton compte sur console.anthropic.com.';
+      throw new Error(msg);
+    }
+    var text=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    var clean=text.replace(/```json|```/g,'').trim();
+    aiExtracted=JSON.parse(clean);
+    afficherResultatIA(aiExtracted);
+  }catch(e){
+    document.getElementById('ai-result').innerHTML='<div class="warn-box">❌ Erreur lors de l\'analyse : '+e.message+'<br>Vérifie que ton fichier est lisible et réessaie.</div>';
+    document.getElementById('ai-result').style.display='block';
+  }
+  btn.disabled=false;
+  btn.innerHTML='✨ Analyser avec l\'IA (extraction H&P automatique)';
+}
+
+function afficherResultatIA(data){
+  var el=document.getElementById('ai-result');
+  var ghsMap=GHS.reduce(function(m,g){m[g.id]=g;return m;},{});
+  var html='<div class="ai-result">'+
+    '<div class="ai-result-title">✨ Résultat de l\'analyse IA</div>'+
+    (data.resume?'<div style="font-size:13px;color:#3a2c1e;margin-bottom:10px;font-style:italic">'+data.resume+'</div>':'')+
+    '<div style="margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.06em">Pictogrammes GHS détectés</span><br>'+
+    (data.ghs&&data.ghs.length?data.ghs.map(function(id){var g=ghsMap[id];return'<span class="ai-chip ai-chip-g">'+id+(g?' — '+g.label:'')+'</span>';}).join(''):'<span style="font-size:12px;color:#a08060">Aucun</span>')+
+    '</div>'+
+    '<div style="margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.06em">Mentions H détectées</span><br>'+
+    (data.h&&data.h.length?data.h.map(function(c){return'<span class="ai-chip ai-chip-h">'+c+'</span>';}).join(''):'<span style="font-size:12px;color:#a08060">Aucune</span>')+
+    '</div>'+
+    '<div style="margin-bottom:12px"><span style="font-size:11px;font-weight:700;color:#8b6f4e;text-transform:uppercase;letter-spacing:.06em">Conseils P détectés</span><br>'+
+    (data.p&&data.p.length?data.p.map(function(c){return'<span class="ai-chip ai-chip-p">'+c+'</span>';}).join(''):'<span style="font-size:12px;color:#a08060">Aucun</span>')+
+    '</div>'+
+    (data.ufi_requis!==undefined?'<div style="font-size:13px;color:#6d5339;margin-bottom:12px">UFI requis : <strong>'+(data.ufi_requis?'Oui ⚠️':'Non ✅')+'</strong></div>':'')+
+    '<button class="bgreen" onclick="appliquerIA()" style="font-size:13px;padding:9px">✅ Appliquer ces mentions à l\'étiquette CLP</button>'+
+    '</div>';
+  el.innerHTML=html;el.style.display='block';
+}
+
+function appliquerIA(){
+  if(!aiExtracted)return;
+  // Réinitialiser
+  selectedGHS=[];selectedH=[];selectedP=[];
+  document.querySelectorAll('.ghs-item').forEach(function(el){el.className='ghs-item';});
+  document.querySelectorAll('.hp-item').forEach(function(el){el.className='hp-item';});
+  document.querySelectorAll('[id^="hc-"],[id^="pc-"]').forEach(function(cb){cb.checked=false;});
+  // Appliquer
+  (aiExtracted.ghs||[]).forEach(function(id){if(GHS.some(function(g){return g.id===id;}))toggleGHS(id);});
+  (aiExtracted.h||[]).forEach(function(code){if(H_LIST.some(function(h){return h.code===code;}))toggleH(code);});
+  (aiExtracted.p||[]).forEach(function(code){if(P_LIST.some(function(p){return p.code===code;}))toggleP(code);});
+  if(aiExtracted.ufi_requis)document.getElementById('c-ufi-req').value='oui';
+  updPreview();
+  // Aller sur l'onglet créer
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab')[0].classList.add('on');
+  document.getElementById('page-creer').classList.add('on');
+  toast('Mentions appliquées à l\'étiquette ✓ — vérifie et sauvegarde !','s');
+}
+
+function saveFds(){
+  var nom=document.getElementById('fds-nom').value.trim();
+  if(!nom){toast('Nom obligatoire','e');return;}
+  var f={
+    id:Date.now().toString(),
+    nom:nom,
+    cat:document.getElementById('fds-cat').value,
+    four:document.getElementById('fds-four').value,
+    notes:document.getElementById('fds-notes').value,
+    date:new Date().toLocaleDateString('fr-FR'),
+    extracted:aiExtracted||null,
+    fileName:currentFile?currentFile.name:'',
+    fileType:currentFileType||'',
+  };
+  // On ne stocke pas le fichier complet (trop lourd pour localStorage)
+  // On stocke juste les métadonnées et le résultat IA
+  fdsList.unshift(f);
+  saveFdsList();fillFdsSel();updStats();rendFds();
+  // Reset
+  document.getElementById('fds-nom').value='';
+  document.getElementById('fds-four').value='';
+  document.getElementById('fds-notes').value='';
+  document.getElementById('fds-file-name').style.display='none';
+  document.getElementById('ai-result').style.display='none';
+  document.getElementById('btn-ai').disabled=true;
+  currentFile=null;currentFileB64=null;aiExtracted=null;
+  toast('FDS sauvegardée ✓','s');
+}
+
+function rendFds(){
+  var el=document.getElementById('list-fds');
+  var CATS={parfum:'🌸 Parfum',cire:'🕯️ Cire',additif:'⚗️ Additif',colorant:'🎨 Colorant',autre:'📦 Autre'};
+  if(!fdsList.length){
+    el.innerHTML='<div class="empty"><div class="empty-i">📄</div><div class="empty-t">Aucune FDS</div><div style="font-size:13px">Importe ta première FDS !</div></div>';
+    return;
+  }
+  el.innerHTML=fdsList.map(function(f){
+    return'<div class="fds-card">'+
+      '<div class="fds-header">'+
+      '<div style="flex:1">'+
+      '<div class="fds-nom">'+f.nom+'</div>'+
+      '<div class="fds-meta">'+(CATS[f.cat]||f.cat)+(f.four?' · '+f.four:'')+' · '+f.date+'</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:5px">'+
+      (f.extracted?'<button class="btn bg bsm" onclick="voirExtrait(\''+f.id+'\')">🔍</button>':'')+
+      '<button class="btn bd bsm" onclick="delFds(\''+f.id+'\')">🗑</button>'+
+      '</div></div>'+
+      '<div class="fds-tags">'+
+      '<span class="tag tb">'+(CATS[f.cat]||f.cat)+'</span>'+
+      (f.extracted?'<span class="tag tg">✨ IA analysée</span>':'<span class="tag to">Non analysée</span>')+
+      (f.fileName?'<span class="tag tp">📎 '+f.fileName+'</span>':'')+
+      (f.extracted&&f.extracted.ufi_requis?'<span class="tag tr">UFI requis</span>':'')+
+      '</div>'+
+      '</div>';
+  }).join('');
+}
+
+function voirExtrait(id){
+  var f=fdsList.filter(function(x){return x.id===id;})[0];if(!f||!f.extracted)return;
+  document.getElementById('m-fds-title').textContent=f.nom;
+  var ghsMap=GHS.reduce(function(m,g){m[g.id]=g;return m;},{});
+  document.getElementById('m-fds-content').innerHTML=
+    '<div style="font-size:13px;display:flex;flex-direction:column;gap:10px">'+
+    (f.extracted.resume?'<div style="font-style:italic;color:#6d5339;background:#f5ece0;padding:10px;border-radius:8px">'+f.extracted.resume+'</div>':'')+
+    '<div><strong>Pictogrammes GHS :</strong> '+((f.extracted.ghs||[]).map(function(id){var g=ghsMap[id];return id+(g?' ('+g.label+')':'');}).join(', ')||'Aucun')+'</div>'+
+    '<div><strong>Mentions H :</strong> '+((f.extracted.h||[]).join(', ')||'Aucune')+'</div>'+
+    '<div><strong>Conseils P :</strong> '+((f.extracted.p||[]).join(', ')||'Aucun')+'</div>'+
+    '<div><strong>UFI requis :</strong> '+(f.extracted.ufi_requis?'Oui ⚠️':'Non ✅')+'</div>'+
+    '</div>';
+  document.getElementById('m-fds').classList.remove('hi');
+}
+
+function delFds(id){fdsList=fdsList.filter(function(f){return f.id!==id;});saveFdsList();fillFdsSel();updStats();rendFds();toast('FDS supprimée','e');}
+
+// ── Bibliothèque CLP ──
+function rendBiblio(){
+  var el=document.getElementById('list-clp');
+  if(!clps.length){
+    el.innerHTML='<div class="empty"><div class="empty-i">🏷️</div><div class="empty-t">Aucune étiquette</div><div style="font-size:13px">Crée ta première étiquette CLP !</div></div>';
+    return;
+  }
+  el.innerHTML=clps.map(function(c){
+    var rec=recs.filter(function(r){return r.id===c.recette_id;})[0];
+    var fds=fdsList.filter(function(f){return f.id===c.fds_id;})[0];
+    return'<div class="clp-card">'+
+      '<div class="clp-header">'+
+      '<div style="flex:1">'+
+      '<div style="font-size:14px;font-weight:700">'+c.nom+'</div>'+
+      '<div style="font-size:12px;color:#a08060;margin-top:2px">'+
+        (rec?'Recette : '+rec.nom+' · ':'')+c.date+
+      '</div></div>'+
+      '<div style="display:flex;gap:5px;flex-wrap:wrap">'+
+      '<button class="btn bg bsm" onclick="loadClp(\''+c.id+'\')">✏️</button>'+
+      '<button class="btn bg bsm" onclick="printClpId(\''+c.id+'\')">🖨️</button>'+
+      '<button class="btn bd bsm" onclick="delClp(\''+c.id+'\')">🗑</button>'+
+      '</div></div>'+
+      '<div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap">'+
+      '<span class="tag tb">'+c.format+'</span>'+
+      (c.ghs&&c.ghs.length?'<span class="tag to">⚠️ '+c.ghs.length+' GHS</span>':'')+
+      (c.h&&c.h.length?'<span class="tag tr">'+c.h.length+' mention H</span>':'')+
+      (c.ufi_req==='oui'&&c.ufi?'<span class="tag tg">UFI ✓</span>':'')+
+      (fds?'<span class="tag tp">📄 '+fds.nom+'</span>':'')+
+      '</div>'+
+      '<div style="margin-top:10px;overflow:hidden">'+c.html+'</div>'+
+      '</div>';
+  }).join('');
+}
+
+function loadClp(id){
+  var c=clps.filter(function(x){return x.id===id;})[0];if(!c)return;
+  document.getElementById('c-recette').value=c.recette_id||'';
+  document.getElementById('c-fds').value=c.fds_id||'';
+  document.getElementById('c-nom').value=c.nom||'';
+  document.getElementById('c-qte').value=c.qte||'';
+  document.getElementById('c-taux').value=c.taux||'';
+  document.getElementById('c-lot').value=c.lot||'';
+  document.getElementById('c-ufi').value=c.ufi||'';
+  document.getElementById('c-ufi-req').value=c.ufi_req||'oui';
+  document.getElementById('c-hp-custom').value=c.hp_custom||'';
+  document.getElementById('c-format').value=c.format||'rect';
+  document.getElementById('c-larg').value=c.larg||80;
+  document.getElementById('c-haut').value=c.haut||50;
+  document.getElementById('c-diam').value=c.diam||60;
+  document.getElementById('c-imp').value=c.imp||'jet';
+  document.getElementById('bases-list').innerHTML='';basesCount=0;
+  (c.bases||[]).forEach(function(b){addBase(b);});if(!c.bases||!c.bases.length)addBase();
+  selectedGHS=[];selectedH=[];selectedP=[];
+  document.querySelectorAll('.ghs-item').forEach(function(e){e.className='ghs-item';});
+  document.querySelectorAll('.hp-item').forEach(function(e){e.className='hp-item';});
+  document.querySelectorAll('[id^="hc-"],[id^="pc-"]').forEach(function(cb){cb.checked=false;});
+  (c.ghs||[]).forEach(function(id){toggleGHS(id);});
+  (c.h||[]).forEach(function(code){toggleH(code);});
+  (c.p||[]).forEach(function(code){toggleP(code);});
+  updFmt();updPreview();
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab')[0].classList.add('on');
+  document.getElementById('page-creer').classList.add('on');
+  toast('Étiquette chargée — modifie et sauvegarde !','s');
+}
+
+function printClpId(id){
+  var c=clps.filter(function(x){return x.id===id;})[0];if(!c)return;
+  var pz=document.getElementById('print-zone');
+  pz.innerHTML='<div style="display:inline-block">'+c.html+'</div>';
+  pz.style.display='flex';pz.style.alignItems='center';pz.style.justifyContent='center';pz.style.padding='20px';
+  window.print();setTimeout(function(){pz.style.display='none';pz.innerHTML='';},1000);
+}
+
+function delClp(id){clps=clps.filter(function(c){return c.id!==id;});saveClps();updStats();rendBiblio();toast('Étiquette supprimée','e');}
+
+function toast(msg,type){
+  var t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type==='e'?'e':'s');
+  clearTimeout(toastT);toastT=setTimeout(function(){t.className='toast hi';},3000);
+}
+
+init();
+</script>
+</body>
+</html>
